@@ -12,6 +12,14 @@ export default function useSocket() {
 
     if (!socket.connected) socket.connect();
 
+    socket.on('connect', () => {
+      console.log('Socket connected:', socket.id);
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+    });
+
     socket.on('room:created', (data) => {
       dispatch({ type: 'SET_PLAYER_INFO', playerName: data.playerName, playerId: data.playerId });
       dispatch({ type: 'ROOM_CREATED', roomCode: data.roomCode, players: data.players, category: data.category });
@@ -115,6 +123,8 @@ export default function useSocket() {
     }
 
     return () => {
+      socket.off('connect');
+      socket.off('connect_error');
       socket.off('room:created');
       socket.off('room:joined');
       socket.off('room:update');
