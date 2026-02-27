@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Users/luisc/Documents/Workspace/word-search-game && npm install 2>&1)",
+      "Bash(cd /c/Users/luisc/Documents/Workspace/word-search-game && npm run build -w client 2>&1)",
+      "Bash(true:*)",
+      "Bash(start:*)",
+      "Bash(vercel:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run:*)",
+      "Bash(gh auth:*)",
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(git:*)",
+      "WebSearch",
+      "Bash(npx vercel:*)",
+      "Bash(tailscale version:*)"
+    ]
+  }
+}

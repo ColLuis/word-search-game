@@ -21,7 +21,6 @@ const io = new Server(httpServer, {
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-// In production, serve the built client files
 if (isProduction) {
   const clientDist = path.join(__dirname, '../../client/dist');
   app.use(express.static(clientDist));
