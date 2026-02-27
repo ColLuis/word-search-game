@@ -4,7 +4,13 @@ import {
   FREEZE_DURATION,
   FREEZE_COOLDOWN,
   HINT_DURATION,
+  FOG_DURATION,
+  FOG_SIZE,
+  MIRROR_DURATION,
+  GRID_SIZE,
 } from './constants.js';
+
+const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'mirror'];
 
 export function earnPowerup(room, playerId) {
   const state = room.game.powerups[playerId];
@@ -13,21 +19,34 @@ export function earnPowerup(room, playerId) {
   state.wordsFound = (state.wordsFound || 0) + 1;
 
   if (state.wordsFound % WORDS_PER_POWERUP === 0) {
-    // Award random powerup type
-    const type = Math.random() < 0.5 ? 'freeze' : 'hint';
-    if (state[type] < MAX_POWERUP_CHARGES) {
-      state[type]++;
-    } else {
-      // Try other type
-      const other = type === 'freeze' ? 'hint' : 'freeze';
-      if (state[other] < MAX_POWERUP_CHARGES) {
-        state[other]++;
+    // Pick a random type, fall back to others if at max
+    const shuffled = [...ALL_TYPES].sort(() => Math.random() - 0.5);
+    for (const type of shuffled) {
+      if ((state[type] || 0) < MAX_POWERUP_CHARGES) {
+        state[type] = (state[type] || 0) + 1;
+        break;
       }
     }
-    return { freeze: state.freeze, hint: state.hint };
+    return {
+      freeze: state.freeze || 0,
+      hint: state.hint || 0,
+      fog: state.fog || 0,
+      bonus: state.bonus || 0,
+      mirror: state.mirror || 0,
+    };
   }
 
   return null;
+}
+
+function powerupsPayload(state) {
+  return {
+    freeze: state.freeze || 0,
+    hint: state.hint || 0,
+    fog: state.fog || 0,
+    bonus: state.bonus || 0,
+    mirror: state.mirror || 0,
+  };
 }
 
 export function usePowerup(room, playerId, type) {
@@ -45,7 +64,6 @@ export function usePowerup(room, playerId, type) {
     state.freeze--;
     state.lastFreezeTime = now;
 
-    // Mark opponent as frozen
     const opponent = room.players.find((p) => p.id !== playerId);
     if (opponent) {
       const oppState = room.game.powerups[opponent.id];
@@ -55,7 +73,7 @@ export function usePowerup(room, playerId, type) {
     return {
       success: true,
       duration: FREEZE_DURATION,
-      powerups: { freeze: state.freeze, hint: state.hint },
+      powerups: powerupsPayload(state),
     };
   }
 
@@ -63,16 +81,57 @@ export function usePowerup(room, playerId, type) {
     if (state.hint <= 0) return { success: false, message: 'No hint charges' };
     state.hint--;
 
-    // Find random unfound word and return its cells
     const unfound = room.game.words.filter((w) => !w.found);
     if (unfound.length === 0) return { success: false, message: 'No words left' };
 
     const word = unfound[Math.floor(Math.random() * unfound.length)];
     return {
       success: true,
-      cells: word.cells,
+      cells: [word.cells[0]],
+      word: word.word,
       duration: HINT_DURATION,
-      powerups: { freeze: state.freeze, hint: state.hint },
+      powerups: powerupsPayload(state),
+    };
+  }
+
+  if (type === 'fog') {
+    if ((state.fog || 0) <= 0) return { success: false, message: 'No fog charges' };
+    state.fog--;
+
+    // Pick random top-left corner for a FOG_SIZE x FOG_SIZE area
+    const maxStart = GRID_SIZE - FOG_SIZE;
+    const fogRow = Math.floor(Math.random() * (maxStart + 1));
+    const fogCol = Math.floor(Math.random() * (maxStart + 1));
+
+    return {
+      success: true,
+      fogRow,
+      fogCol,
+      fogSize: FOG_SIZE,
+      duration: FOG_DURATION,
+      powerups: powerupsPayload(state),
+    };
+  }
+
+  if (type === 'bonus') {
+    if ((state.bonus || 0) <= 0) return { success: false, message: 'No bonus charges' };
+    state.bonus--;
+    state.bonusActive = true;
+
+    return {
+      success: true,
+      powerups: powerupsPayload(state),
+    };
+  }
+
+  if (type === 'mirror') {
+    if ((state.mirror || 0) <= 0) return { success: false, message: 'No mirror charges' };
+    state.mirror--;
+
+    return {
+      success: true,
+      duration: MIRROR_DURATION,
+      powerups: powerupsPayload(state),
     };
   }
 

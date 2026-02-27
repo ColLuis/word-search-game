@@ -29,4 +29,7 @@ export const EVENTS = {
   POWERUP_USE: 'powerup:use',
   POWERUP_FREEZE: 'powerup:freeze',
   POWERUP_HINT: 'powerup:hint',
+  POWERUP_FOG: 'powerup:fog',
+  POWERUP_BONUS: 'powerup:bonus',
+  POWERUP_MIRROR: 'powerup:mirror',
 };

@@ -17,6 +17,10 @@ const io = new Server(httpServer, {
         origin: 'http://localhost:5173',
         methods: ['GET', 'POST'],
       },
+  transports: ['websocket', 'polling'],
+  allowUpgrades: true,
+  pingTimeout: 60000,
+  pingInterval: 25000,
 });
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
@@ -30,10 +34,10 @@ if (isProduction) {
 }
 
 io.on('connection', (socket) => {
-  console.log(`Connected: ${socket.id}`);
+  console.log(`Connected: ${socket.id} (transport: ${socket.conn.transport.name})`);
   registerSocketHandlers(io, socket);
-  socket.on('disconnect', () => {
-    console.log(`Disconnected: ${socket.id}`);
+  socket.on('disconnect', (reason) => {
+    console.log(`Disconnected: ${socket.id} (reason: ${reason})`);
   });
 });
 

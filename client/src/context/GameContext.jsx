@@ -12,9 +12,13 @@ const initialState = {
   grid: [],
   words: [],             // [{ word, found, foundBy, cells }]
   scores: {},            // { playerId: score }
-  powerups: { freeze: 0, hint: 0 },
+  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, mirror: 0 },
   frozen: false,
   hintCells: [],
+  hintWord: null,
+  fogArea: null,
+  bonusActive: false,
+  mirrored: false,
   countdown: null,
   winner: null,
   toast: null,
@@ -50,9 +54,13 @@ function gameReducer(state, action) {
         words: action.words,
         scores: action.scores,
         countdown: null,
-        powerups: { freeze: 0, hint: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, mirror: 0 },
         frozen: false,
         hintCells: [],
+        hintWord: null,
+        fogArea: null,
+        bonusActive: false,
+        mirrored: false,
         winner: null,
       };
 
@@ -76,10 +84,25 @@ function gameReducer(state, action) {
       return { ...state, frozen: action.frozen };
 
     case 'HINT':
-      return { ...state, hintCells: action.cells };
+      return { ...state, hintCells: action.cells, hintWord: action.word };
 
     case 'CLEAR_HINT':
-      return { ...state, hintCells: [] };
+      return { ...state, hintCells: [], hintWord: null };
+
+    case 'FOG':
+      return { ...state, fogArea: action.fogArea };
+
+    case 'CLEAR_FOG':
+      return { ...state, fogArea: null };
+
+    case 'BONUS_ACTIVE':
+      return { ...state, bonusActive: true };
+
+    case 'BONUS_USED':
+      return { ...state, bonusActive: false };
+
+    case 'MIRROR':
+      return { ...state, mirrored: action.mirrored };
 
     case 'GAME_END':
       return { ...state, phase: 'results', winner: action.winner, scores: action.scores };
@@ -107,9 +130,13 @@ function gameReducer(state, action) {
         grid: [],
         words: [],
         scores: {},
-        powerups: { freeze: 0, hint: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, mirror: 0 },
         frozen: false,
         hintCells: [],
+        hintWord: null,
+        fogArea: null,
+        bonusActive: false,
+        mirrored: false,
         winner: null,
         players: action.players ?? state.players,
       };

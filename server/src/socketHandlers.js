@@ -62,8 +62,10 @@ function startCountdown(io, room) {
 export function registerSocketHandlers(io, socket) {
   // Room: Create
   socket.on('room:create', ({ playerName, category }) => {
+    console.log(`room:create from ${socket.id} - name: ${playerName}, category: ${category}`);
     const room = createRoom(socket.id, playerName, category);
     socket.join(room.code);
+    console.log(`Room ${room.code} created with player ${playerName}`);
     socket.emit('room:created', {
       roomCode: room.code,
       players: playersPayload(room),
@@ -74,6 +76,7 @@ export function registerSocketHandlers(io, socket) {
 
   // Room: Join
   socket.on('room:join', ({ roomCode, playerName }) => {
+    console.log(`room:join from ${socket.id} - name: ${playerName}, code: ${roomCode}`);
     const result = joinRoom(roomCode.toUpperCase(), socket.id, playerName);
     if (result.error) {
       socket.emit('room:error', { message: result.error });
@@ -92,10 +95,16 @@ export function registerSocketHandlers(io, socket) {
 
   // Player: Ready
   socket.on('player:ready', () => {
+    console.log(`player:ready from ${socket.id}`);
     const room = setPlayerReady(socket.id);
-    if (!room) return;
+    if (!room) {
+      console.log(`player:ready - no room found for ${socket.id}`);
+      return;
+    }
+    console.log(`Room ${room.code}: players=${room.players.length}, ready=${room.players.filter(p => p.ready).length}`);
     io.to(room.code).emit('room:update', { players: playersPayload(room) });
     if (allPlayersReady(room)) {
+      console.log(`Room ${room.code}: all ready, starting countdown`);
       startCountdown(io, room);
     }
   });
@@ -111,9 +120,17 @@ export function registerSocketHandlers(io, socket) {
       return;
     }
 
-    // Update score
+    // Update score (apply bonus multiplier if active)
     const player = room.players.find((p) => p.id === socket.id);
-    if (player) player.score += 1;
+    if (player) {
+      const pState = room.game.powerups[socket.id];
+      const multiplier = pState && pState.bonusActive ? 2 : 1;
+      player.score += multiplier;
+      if (pState && pState.bonusActive) {
+        pState.bonusActive = false;
+        socket.emit('powerup:bonusUsed');
+      }
+    }
 
     const wordsPayload = room.game.words.map((w) => ({
       word: w.word,
@@ -169,7 +186,26 @@ export function registerSocketHandlers(io, socket) {
         });
       }
     } else if (type === 'hint') {
-      socket.emit('powerup:hint', { cells: result.cells, duration: result.duration });
+      socket.emit('powerup:hint', { cells: result.cells, word: result.word, duration: result.duration });
+    } else if (type === 'fog') {
+      const opponent = room.players.find((p) => p.id !== socket.id);
+      if (opponent) {
+        io.to(opponent.id).emit('powerup:fog', {
+          fogRow: result.fogRow,
+          fogCol: result.fogCol,
+          fogSize: result.fogSize,
+          duration: result.duration,
+        });
+      }
+    } else if (type === 'bonus') {
+      socket.emit('powerup:bonus', {});
+    } else if (type === 'mirror') {
+      const opponent = room.players.find((p) => p.id !== socket.id);
+      if (opponent) {
+        io.to(opponent.id).emit('powerup:mirror', {
+          duration: result.duration,
+        });
+      }
     }
 
     socket.emit('powerup:earned', { powerups: result.powerups });
@@ -189,6 +225,7 @@ export function registerSocketHandlers(io, socket) {
 
   // Reconnection
   socket.on('reconnect:attempt', ({ roomCode, playerName }) => {
+    console.log(`reconnect:attempt from ${socket.id} - name: ${playerName}, code: ${roomCode}`);
     const room = getRoom(roomCode);
     if (!room) {
       socket.emit('room:error', { message: 'Room no longer exists' });

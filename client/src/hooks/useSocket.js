@@ -64,8 +64,26 @@ export default function useSocket() {
     });
 
     socket.on('powerup:hint', (data) => {
-      dispatch({ type: 'HINT', cells: data.cells });
+      dispatch({ type: 'HINT', cells: data.cells, word: data.word });
       setTimeout(() => dispatch({ type: 'CLEAR_HINT' }), data.duration);
+    });
+
+    socket.on('powerup:fog', (data) => {
+      dispatch({ type: 'FOG', fogArea: { row: data.fogRow, col: data.fogCol, size: data.fogSize } });
+      setTimeout(() => dispatch({ type: 'CLEAR_FOG' }), data.duration);
+    });
+
+    socket.on('powerup:bonus', () => {
+      dispatch({ type: 'BONUS_ACTIVE' });
+    });
+
+    socket.on('powerup:bonusUsed', () => {
+      dispatch({ type: 'BONUS_USED' });
+    });
+
+    socket.on('powerup:mirror', (data) => {
+      dispatch({ type: 'MIRROR', mirrored: true });
+      setTimeout(() => dispatch({ type: 'MIRROR', mirrored: false }), data.duration);
     });
 
     socket.on('game:end', (data) => {
@@ -108,6 +126,10 @@ export default function useSocket() {
       socket.off('powerup:earned');
       socket.off('powerup:freeze');
       socket.off('powerup:hint');
+      socket.off('powerup:fog');
+      socket.off('powerup:bonus');
+      socket.off('powerup:bonusUsed');
+      socket.off('powerup:mirror');
       socket.off('game:end');
       socket.off('game:state');
       socket.off('player:disconnected');
