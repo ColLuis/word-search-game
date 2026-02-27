@@ -1,0 +1,9 @@
+export const GRID_SIZE = 12;
+export const WORDS_PER_GAME = 12;
+export const COUNTDOWN_SECONDS = 3;
+export const FREEZE_DURATION = 5000;
+export const FREEZE_COOLDOWN = 10000;
+export const HINT_DURATION = 3000;
+export const WORDS_PER_POWERUP = 3;
+export const MAX_POWERUP_CHARGES = 2;
+export const DISCONNECT_TIMEOUT = 30000;
