@@ -4,7 +4,7 @@ import { getSocket } from '../lib/socket.js';
 const POWERUP_CONFIG = [
   { type: 'freeze', label: 'Freeze', bg: 'bg-cyan-800', hover: 'hover:bg-cyan-700', badge: 'bg-cyan-500', badgeText: '' },
   { type: 'hint', label: 'Hint', bg: 'bg-yellow-800', hover: 'hover:bg-yellow-700', badge: 'bg-yellow-500', badgeText: 'text-black' },
-  { type: 'fog', label: 'Fog', bg: 'bg-purple-800', hover: 'hover:bg-purple-700', badge: 'bg-purple-500', badgeText: '' },
+  { type: 'fog', label: 'Scramble', bg: 'bg-purple-800', hover: 'hover:bg-purple-700', badge: 'bg-purple-500', badgeText: '' },
   { type: 'bonus', label: 'Bonus', bg: 'bg-green-800', hover: 'hover:bg-green-700', badge: 'bg-green-500', badgeText: 'text-black' },
   { type: 'steal', label: 'Steal', bg: 'bg-red-800', hover: 'hover:bg-red-700', badge: 'bg-red-500', badgeText: '' },
 ];
