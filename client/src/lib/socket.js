@@ -6,7 +6,7 @@ export function getSocket() {
   if (!socket) {
     socket = io({
       autoConnect: false,
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
     });
   }
   return socket;

@@ -17,8 +17,7 @@ const io = new Server(httpServer, {
         origin: 'http://localhost:5173',
         methods: ['GET', 'POST'],
       },
-  transports: ['websocket'],
-  allowUpgrades: false,
+  transports: ['websocket', 'polling'],
   pingTimeout: 60000,
   pingInterval: 25000,
 });

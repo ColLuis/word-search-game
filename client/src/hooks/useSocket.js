@@ -14,6 +14,13 @@ export default function useSocket() {
 
     socket.on('connect', () => {
       console.log('Socket connected:', socket.id);
+      // Re-send reconnect attempt on every (re)connection
+      const savedRoom = sessionStorage.getItem('wordrush_room');
+      const savedName = sessionStorage.getItem('wordrush_name');
+      if (savedRoom && savedName) {
+        console.log('Auto-reconnecting to room:', savedRoom);
+        socket.emit('reconnect:attempt', { roomCode: savedRoom, playerName: savedName });
+      }
     });
 
     socket.on('connect_error', (err) => {
@@ -114,13 +121,6 @@ export default function useSocket() {
     socket.on('player:reconnected', () => {
       dispatch({ type: 'OPPONENT_DISCONNECTED', disconnected: false });
     });
-
-    // Auto-reconnect attempt
-    const savedRoom = sessionStorage.getItem('wordrush_room');
-    const savedName = sessionStorage.getItem('wordrush_name');
-    if (savedRoom && savedName) {
-      socket.emit('reconnect:attempt', { roomCode: savedRoom, playerName: savedName });
-    }
 
     return () => {
       socket.off('connect');
