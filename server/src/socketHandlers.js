@@ -199,13 +199,6 @@ export function registerSocketHandlers(io, socket) {
       }
     } else if (type === 'bonus') {
       socket.emit('powerup:bonus', {});
-    } else if (type === 'mirror') {
-      const opponent = room.players.find((p) => p.id !== socket.id);
-      if (opponent) {
-        io.to(opponent.id).emit('powerup:mirror', {
-          duration: result.duration,
-        });
-      }
     }
 
     socket.emit('powerup:earned', { powerups: result.powerups });

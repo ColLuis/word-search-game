@@ -96,11 +96,6 @@ export default function useSocket() {
       dispatch({ type: 'BONUS_USED' });
     });
 
-    socket.on('powerup:mirror', (data) => {
-      dispatch({ type: 'MIRROR', mirrored: true });
-      setTimeout(() => dispatch({ type: 'MIRROR', mirrored: false }), data.duration);
-    });
-
     socket.on('game:end', (data) => {
       dispatch({ type: 'GAME_END', winner: data.winner, scores: data.scores });
       sessionStorage.removeItem('wordrush_room');
@@ -139,7 +134,6 @@ export default function useSocket() {
       socket.off('powerup:fog');
       socket.off('powerup:bonus');
       socket.off('powerup:bonusUsed');
-      socket.off('powerup:mirror');
       socket.off('game:end');
       socket.off('game:state');
       socket.off('player:disconnected');

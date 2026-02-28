@@ -12,13 +12,12 @@ const initialState = {
   grid: [],
   words: [],             // [{ word, found, foundBy, cells }]
   scores: {},            // { playerId: score }
-  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, mirror: 0 },
+  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0 },
   frozen: false,
   hintCells: [],
   hintWord: null,
   fogArea: null,
   bonusActive: false,
-  mirrored: false,
   countdown: null,
   winner: null,
   toast: null,
@@ -54,14 +53,13 @@ function gameReducer(state, action) {
         words: action.words,
         scores: action.scores,
         countdown: null,
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, mirror: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
         fogArea: null,
         bonusActive: false,
-        mirrored: false,
-        winner: null,
+              winner: null,
       };
 
     case 'WORD_CONFIRMED': {
@@ -101,9 +99,6 @@ function gameReducer(state, action) {
     case 'BONUS_USED':
       return { ...state, bonusActive: false };
 
-    case 'MIRROR':
-      return { ...state, mirrored: action.mirrored };
-
     case 'GAME_END':
       return { ...state, phase: 'results', winner: action.winner, scores: action.scores };
 
@@ -130,14 +125,13 @@ function gameReducer(state, action) {
         grid: [],
         words: [],
         scores: {},
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, mirror: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
         fogArea: null,
         bonusActive: false,
-        mirrored: false,
-        winner: null,
+              winner: null,
         players: action.players ?? state.players,
       };
 

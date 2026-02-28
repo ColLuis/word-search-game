@@ -9,7 +9,7 @@ function cellKey(r, c) {
 
 export default function Grid() {
   const { state } = useGame();
-  const { grid, words, playerId, hintCells, hintWord, frozen, fogArea, bonusActive, mirrored } = state;
+  const { grid, words, playerId, hintCells, hintWord, frozen, fogArea, bonusActive } = state;
   const { gridRef, draggedCells, onPointerDown, onPointerMove, onPointerUp } = useGridDrag(frozen);
 
   // Build found-cells map: cellKey -> 'self' | 'opponent'
@@ -66,11 +66,6 @@ export default function Grid() {
           </span>
         </div>
       )}
-      {mirrored && (
-        <div className="absolute -top-8 left-0 right-0 text-center text-pink-400 text-sm font-bold animate-pulse z-10">
-          MIRRORED!
-        </div>
-      )}
       <div
         ref={gridRef}
         className={`grid select-none aspect-square w-full transition-all duration-300 ${bonusActive ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''}`}
@@ -78,7 +73,6 @@ export default function Grid() {
           gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
           gridTemplateRows: `repeat(${GRID_SIZE}, 1fr)`,
           touchAction: 'none',
-          transform: mirrored ? 'scaleX(-1)' : undefined,
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -104,7 +98,6 @@ export default function Grid() {
               <div
                 key={key}
                 className={`flex items-center justify-center text-xs sm:text-sm font-bold rounded-sm m-[1px] transition-colors duration-100 ${bg}`}
-                style={mirrored ? { transform: 'scaleX(-1)' } : undefined}
               >
                 {frozen ? '' : fogged ? '' : letter}
               </div>

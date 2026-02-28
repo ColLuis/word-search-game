@@ -6,11 +6,10 @@ import {
   HINT_DURATION,
   FOG_DURATION,
   FOG_SIZE,
-  MIRROR_DURATION,
   GRID_SIZE,
 } from './constants.js';
 
-const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'mirror'];
+const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus'];
 
 export function earnPowerup(room, playerId) {
   const state = room.game.powerups[playerId];
@@ -19,7 +18,6 @@ export function earnPowerup(room, playerId) {
   state.wordsFound = (state.wordsFound || 0) + 1;
 
   if (state.wordsFound % WORDS_PER_POWERUP === 0) {
-    // Pick a random type, fall back to others if at max
     const shuffled = [...ALL_TYPES].sort(() => Math.random() - 0.5);
     for (const type of shuffled) {
       if ((state[type] || 0) < MAX_POWERUP_CHARGES) {
@@ -27,13 +25,7 @@ export function earnPowerup(room, playerId) {
         break;
       }
     }
-    return {
-      freeze: state.freeze || 0,
-      hint: state.hint || 0,
-      fog: state.fog || 0,
-      bonus: state.bonus || 0,
-      mirror: state.mirror || 0,
-    };
+    return powerupsPayload(state);
   }
 
   return null;
@@ -45,7 +37,6 @@ function powerupsPayload(state) {
     hint: state.hint || 0,
     fog: state.fog || 0,
     bonus: state.bonus || 0,
-    mirror: state.mirror || 0,
   };
 }
 
@@ -98,7 +89,6 @@ export function usePowerup(room, playerId, type) {
     if ((state.fog || 0) <= 0) return { success: false, message: 'No fog charges' };
     state.fog--;
 
-    // Pick random top-left corner for a FOG_SIZE x FOG_SIZE area
     const maxStart = GRID_SIZE - FOG_SIZE;
     const fogRow = Math.floor(Math.random() * (maxStart + 1));
     const fogCol = Math.floor(Math.random() * (maxStart + 1));
@@ -120,17 +110,6 @@ export function usePowerup(room, playerId, type) {
 
     return {
       success: true,
-      powerups: powerupsPayload(state),
-    };
-  }
-
-  if (type === 'mirror') {
-    if ((state.mirror || 0) <= 0) return { success: false, message: 'No mirror charges' };
-    state.mirror--;
-
-    return {
-      success: true,
-      duration: MIRROR_DURATION,
       powerups: powerupsPayload(state),
     };
   }

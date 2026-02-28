@@ -42,7 +42,7 @@ export function startGame(room) {
 
   room.players.forEach((p) => {
     p.score = 0;
-    room.game.powerups[p.id] = { freeze: 0, hint: 0, fog: 0, bonus: 0, mirror: 0, wordsFound: 0, lastFreezeTime: 0 };
+    room.game.powerups[p.id] = { freeze: 0, hint: 0, fog: 0, bonus: 0, wordsFound: 0, lastFreezeTime: 0 };
   });
 
   return room.game;
