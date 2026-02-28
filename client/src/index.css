@@ -52,6 +52,23 @@
   100% { background-color: transparent; }
 }
 
+/* Grid shake/scramble */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-4px) rotate(-0.5deg); }
+  20% { transform: translateX(4px) rotate(0.5deg); }
+  30% { transform: translateX(-3px) rotate(-0.3deg); }
+  40% { transform: translateX(3px) rotate(0.3deg); }
+  50% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
+  70% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+  90% { transform: translateX(0); }
+}
+.animate-shake {
+  animation: shake 0.5s ease-in-out infinite;
+}
+
 /* Red flash for rejected */
 @keyframes red-flash {
   0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }

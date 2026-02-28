@@ -5,9 +5,6 @@ import {
   FREEZE_COOLDOWN,
   HINT_DURATION,
   FOG_DURATION,
-  FOG_SIZE,
-  FOG_PATCHES,
-  GRID_SIZE,
 } from './constants.js';
 
 const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'steal'];
@@ -91,19 +88,8 @@ export function usePowerup(room, playerId, type) {
     if ((state.fog || 0) <= 0) return { success: false, message: 'No fog charges' };
     state.fog--;
 
-    const maxStart = GRID_SIZE - FOG_SIZE;
-    const patches = [];
-    for (let i = 0; i < FOG_PATCHES; i++) {
-      patches.push({
-        row: Math.floor(Math.random() * (maxStart + 1)),
-        col: Math.floor(Math.random() * (maxStart + 1)),
-        size: FOG_SIZE,
-      });
-    }
-
     return {
       success: true,
-      patches,
       duration: FOG_DURATION,
       powerups: powerupsPayload(state),
     };

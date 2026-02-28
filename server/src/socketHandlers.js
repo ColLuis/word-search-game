@@ -191,7 +191,6 @@ export function registerSocketHandlers(io, socket) {
       const opponent = room.players.find((p) => p.id !== socket.id);
       if (opponent) {
         io.to(opponent.id).emit('powerup:fog', {
-          patches: result.patches,
           duration: result.duration,
         });
       }

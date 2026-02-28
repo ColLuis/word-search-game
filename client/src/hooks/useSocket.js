@@ -84,8 +84,8 @@ export default function useSocket() {
     });
 
     socket.on('powerup:fog', (data) => {
-      dispatch({ type: 'FOG', fogPatches: data.patches });
-      setTimeout(() => dispatch({ type: 'CLEAR_FOG' }), data.duration);
+      dispatch({ type: 'SCRAMBLE' });
+      setTimeout(() => dispatch({ type: 'CLEAR_SCRAMBLE' }), data.duration);
     });
 
     socket.on('powerup:bonus', () => {
