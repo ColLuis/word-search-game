@@ -59,12 +59,17 @@ export function validateWordFound(room, playerId, startRow, startCol, endRow, en
 
   for (const w of words) {
     if (w.found) continue;
-    if (
+    const forward =
       w.startRow === startRow &&
       w.startCol === startCol &&
       w.endRow === endRow &&
-      w.endCol === endCol
-    ) {
+      w.endCol === endCol;
+    const reverse =
+      w.startRow === endRow &&
+      w.startCol === endCol &&
+      w.endRow === startRow &&
+      w.endCol === startCol;
+    if (forward || reverse) {
       w.found = true;
       w.foundBy = playerId;
       return { valid: true, word: w.word, cells: w.cells };

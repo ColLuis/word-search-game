@@ -60,8 +60,10 @@ export default function Grid() {
         </div>
       )}
       {bonusActive && (
-        <div className="absolute -top-8 left-0 right-0 text-center text-green-400 text-sm font-bold animate-pulse z-10">
-          2x BONUS active!
+        <div className="absolute -top-10 left-0 right-0 text-center z-10">
+          <span className="bg-green-500 text-black text-sm font-extrabold px-4 py-1 rounded-full animate-bounce inline-block">
+            2x BONUS — Next word is worth double!
+          </span>
         </div>
       )}
       {mirrored && (
@@ -71,7 +73,7 @@ export default function Grid() {
       )}
       <div
         ref={gridRef}
-        className="grid select-none aspect-square w-full transition-transform duration-300"
+        className={`grid select-none aspect-square w-full transition-all duration-300 ${bonusActive ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''}`}
         style={{
           gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
           gridTemplateRows: `repeat(${GRID_SIZE}, 1fr)`,
