@@ -199,6 +199,11 @@ export function registerSocketHandlers(io, socket) {
       }
     } else if (type === 'bonus') {
       socket.emit('powerup:bonus', {});
+    } else if (type === 'steal') {
+      io.to(room.code).emit('powerup:steal', {
+        scores: scoresPayload(room),
+        thiefId: socket.id,
+      });
     }
 
     socket.emit('powerup:earned', { powerups: result.powerups });

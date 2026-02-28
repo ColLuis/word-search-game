@@ -96,6 +96,10 @@ export default function useSocket() {
       dispatch({ type: 'BONUS_USED' });
     });
 
+    socket.on('powerup:steal', (data) => {
+      dispatch({ type: 'WORD_CONFIRMED', word: null, foundBy: null, scores: data.scores });
+    });
+
     socket.on('game:end', (data) => {
       dispatch({ type: 'GAME_END', winner: data.winner, scores: data.scores });
       sessionStorage.removeItem('wordrush_room');
@@ -134,6 +138,7 @@ export default function useSocket() {
       socket.off('powerup:fog');
       socket.off('powerup:bonus');
       socket.off('powerup:bonusUsed');
+      socket.off('powerup:steal');
       socket.off('game:end');
       socket.off('game:state');
       socket.off('player:disconnected');

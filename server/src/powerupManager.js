@@ -9,7 +9,7 @@ import {
   GRID_SIZE,
 } from './constants.js';
 
-const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus'];
+const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'steal'];
 
 export function earnPowerup(room, playerId) {
   const state = room.game.powerups[playerId];
@@ -37,6 +37,7 @@ function powerupsPayload(state) {
     hint: state.hint || 0,
     fog: state.fog || 0,
     bonus: state.bonus || 0,
+    steal: state.steal || 0,
   };
 }
 
@@ -107,6 +108,23 @@ export function usePowerup(room, playerId, type) {
     if ((state.bonus || 0) <= 0) return { success: false, message: 'No bonus charges' };
     state.bonus--;
     state.bonusActive = true;
+
+    return {
+      success: true,
+      powerups: powerupsPayload(state),
+    };
+  }
+
+  if (type === 'steal') {
+    if ((state.steal || 0) <= 0) return { success: false, message: 'No steal charges' };
+    state.steal--;
+
+    const opponent = room.players.find((p) => p.id !== playerId);
+    if (!opponent || opponent.score <= 0) {
+      return { success: false, message: 'Nothing to steal' };
+    }
+
+    opponent.score = Math.max(0, opponent.score - 1);
 
     return {
       success: true,

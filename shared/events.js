@@ -31,4 +31,5 @@ export const EVENTS = {
   POWERUP_HINT: 'powerup:hint',
   POWERUP_FOG: 'powerup:fog',
   POWERUP_BONUS: 'powerup:bonus',
+  POWERUP_STEAL: 'powerup:steal',
 };

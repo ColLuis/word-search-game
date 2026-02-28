@@ -12,7 +12,7 @@ const initialState = {
   grid: [],
   words: [],             // [{ word, found, foundBy, cells }]
   scores: {},            // { playerId: score }
-  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0 },
+  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, steal: 0 },
   frozen: false,
   hintCells: [],
   hintWord: null,
@@ -53,7 +53,7 @@ function gameReducer(state, action) {
         words: action.words,
         scores: action.scores,
         countdown: null,
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, steal: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
@@ -125,7 +125,7 @@ function gameReducer(state, action) {
         grid: [],
         words: [],
         scores: {},
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, steal: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
