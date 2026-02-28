@@ -16,7 +16,7 @@ const initialState = {
   frozen: false,
   hintCells: [],
   hintWord: null,
-  fogArea: null,
+  fogPatches: null,
   bonusActive: false,
   countdown: null,
   winner: null,
@@ -57,7 +57,7 @@ function gameReducer(state, action) {
         frozen: false,
         hintCells: [],
         hintWord: null,
-        fogArea: null,
+        fogPatches: null,
         bonusActive: false,
               winner: null,
       };
@@ -88,10 +88,13 @@ function gameReducer(state, action) {
       return { ...state, hintCells: [], hintWord: null };
 
     case 'FOG':
-      return { ...state, fogArea: action.fogArea };
+      return { ...state, fogPatches: action.fogPatches };
 
     case 'CLEAR_FOG':
-      return { ...state, fogArea: null };
+      return { ...state, fogPatches: null };
+
+    case 'SCORES_UPDATE':
+      return { ...state, scores: action.scores };
 
     case 'BONUS_ACTIVE':
       return { ...state, bonusActive: true };
@@ -129,7 +132,7 @@ function gameReducer(state, action) {
         frozen: false,
         hintCells: [],
         hintWord: null,
-        fogArea: null,
+        fogPatches: null,
         bonusActive: false,
               winner: null,
         players: action.players ?? state.players,

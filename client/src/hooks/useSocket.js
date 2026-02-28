@@ -84,7 +84,7 @@ export default function useSocket() {
     });
 
     socket.on('powerup:fog', (data) => {
-      dispatch({ type: 'FOG', fogArea: { row: data.fogRow, col: data.fogCol, size: data.fogSize } });
+      dispatch({ type: 'FOG', fogPatches: data.patches });
       setTimeout(() => dispatch({ type: 'CLEAR_FOG' }), data.duration);
     });
 
@@ -97,7 +97,14 @@ export default function useSocket() {
     });
 
     socket.on('powerup:steal', (data) => {
-      dispatch({ type: 'WORD_CONFIRMED', word: null, foundBy: null, scores: data.scores });
+      dispatch({ type: 'SCORES_UPDATE', scores: data.scores });
+      const myId = socket.id;
+      if (data.thiefId === myId) {
+        dispatch({ type: 'WORD_REJECTED', message: 'Stole 1 point!' });
+      } else {
+        dispatch({ type: 'WORD_REJECTED', message: 'A point was stolen from you!' });
+      }
+      setTimeout(() => dispatch({ type: 'CLEAR_TOAST' }), 2000);
     });
 
     socket.on('game:end', (data) => {

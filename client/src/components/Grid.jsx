@@ -9,7 +9,7 @@ function cellKey(r, c) {
 
 export default function Grid() {
   const { state } = useGame();
-  const { grid, words, playerId, hintCells, hintWord, frozen, fogArea, bonusActive } = state;
+  const { grid, words, playerId, hintCells, hintWord, frozen, fogPatches, bonusActive } = state;
   const { gridRef, draggedCells, onPointerDown, onPointerMove, onPointerUp } = useGridDrag(frozen);
 
   // Build found-cells map: cellKey -> 'self' | 'opponent'
@@ -40,15 +40,17 @@ export default function Grid() {
   // Fog set
   const fogSet = useMemo(() => {
     const set = new Set();
-    if (fogArea) {
-      for (let r = fogArea.row; r < fogArea.row + fogArea.size; r++) {
-        for (let c = fogArea.col; c < fogArea.col + fogArea.size; c++) {
-          set.add(cellKey(r, c));
+    if (fogPatches) {
+      for (const patch of fogPatches) {
+        for (let r = patch.row; r < patch.row + patch.size; r++) {
+          for (let c = patch.col; c < patch.col + patch.size; c++) {
+            set.add(cellKey(r, c));
+          }
         }
       }
     }
     return set;
-  }, [fogArea]);
+  }, [fogPatches]);
 
   if (!grid || grid.length === 0) return null;
 

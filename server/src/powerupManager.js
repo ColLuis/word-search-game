@@ -6,6 +6,7 @@ import {
   HINT_DURATION,
   FOG_DURATION,
   FOG_SIZE,
+  FOG_PATCHES,
   GRID_SIZE,
 } from './constants.js';
 
@@ -91,14 +92,18 @@ export function usePowerup(room, playerId, type) {
     state.fog--;
 
     const maxStart = GRID_SIZE - FOG_SIZE;
-    const fogRow = Math.floor(Math.random() * (maxStart + 1));
-    const fogCol = Math.floor(Math.random() * (maxStart + 1));
+    const patches = [];
+    for (let i = 0; i < FOG_PATCHES; i++) {
+      patches.push({
+        row: Math.floor(Math.random() * (maxStart + 1)),
+        col: Math.floor(Math.random() * (maxStart + 1)),
+        size: FOG_SIZE,
+      });
+    }
 
     return {
       success: true,
-      fogRow,
-      fogCol,
-      fogSize: FOG_SIZE,
+      patches,
       duration: FOG_DURATION,
       powerups: powerupsPayload(state),
     };
@@ -125,6 +130,8 @@ export function usePowerup(room, playerId, type) {
     }
 
     opponent.score = Math.max(0, opponent.score - 1);
+    const player = room.players.find((p) => p.id === playerId);
+    if (player) player.score += 1;
 
     return {
       success: true,
