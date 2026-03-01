@@ -110,13 +110,13 @@ export function usePowerup(room, playerId, type) {
 
   if (type === 'drain') {
     if ((state.drain || 0) <= 0) return { success: false, message: 'No drain charges' };
-    state.drain--;
 
     const opponent = room.players.find((p) => p.id !== playerId);
     if (!opponent || opponent.score <= 0) {
       return { success: false, message: 'Opponent has no points' };
     }
 
+    state.drain--;
     opponent.score = Math.max(0, opponent.score - 1);
 
     return {
