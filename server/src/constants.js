@@ -20,9 +20,11 @@ export const ESCALATION_TIERS = [
   { threshold: 9, multiplier: 3 },
 ];
 
-// Final countdown when only 1 word remains — points drain over time
+// Final countdown when only 1 word remains — points drain every 2s
 export const FINAL_COUNTDOWN_TIERS = [
   { seconds: 10, points: 5 },
-  { seconds: 5, points: 3 },
-  { seconds: 0, points: 1 },
+  { seconds: 8, points: 4 },
+  { seconds: 6, points: 3 },
+  { seconds: 4, points: 2 },
+  { seconds: 2, points: 1 },
 ];
