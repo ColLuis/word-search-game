@@ -6,7 +6,8 @@ const POWERUP_CONFIG = [
   { type: 'hint', label: 'Hint', bg: 'bg-yellow-800', hover: 'hover:bg-yellow-700', badge: 'bg-yellow-500', badgeText: 'text-black' },
   { type: 'fog', label: 'Scramble', bg: 'bg-purple-800', hover: 'hover:bg-purple-700', badge: 'bg-purple-500', badgeText: '' },
   { type: 'bonus', label: 'Bonus', bg: 'bg-green-800', hover: 'hover:bg-green-700', badge: 'bg-green-500', badgeText: 'text-black' },
-  { type: 'steal', label: 'Steal', bg: 'bg-red-800', hover: 'hover:bg-red-700', badge: 'bg-red-500', badgeText: '' },
+  { type: 'drain', label: 'Drain', bg: 'bg-red-800', hover: 'hover:bg-red-700', badge: 'bg-red-500', badgeText: '' },
+  { type: 'rotate', label: 'Rotate', bg: 'bg-orange-800', hover: 'hover:bg-orange-700', badge: 'bg-orange-500', badgeText: 'text-black' },
 ];
 
 export default function PowerupBar() {

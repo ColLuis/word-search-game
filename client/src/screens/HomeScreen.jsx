@@ -8,11 +8,12 @@ export default function HomeScreen() {
   const [name, setName] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [roomCode, setRoomCode] = useState('');
+  const [seriesLength, setSeriesLength] = useState(1);
   const [error, setError] = useState('');
 
   const handleCreate = () => {
     if (!name.trim()) { setError('Enter your name'); return; }
-    getSocket().emit('room:create', { playerName: name.trim(), category });
+    getSocket().emit('room:create', { playerName: name.trim(), category, seriesLength });
   };
 
   const handleJoin = () => {
@@ -65,6 +66,17 @@ export default function HomeScreen() {
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
+            </select>
+
+            <select
+              value={seriesLength}
+              onChange={(e) => setSeriesLength(Number(e.target.value))}
+              className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+            >
+              <option value={1}>Single Game</option>
+              <option value={3}>Best of 3</option>
+              <option value={5}>Best of 5</option>
+              <option value={7}>Best of 7</option>
             </select>
           )}
 

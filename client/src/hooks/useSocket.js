@@ -29,14 +29,14 @@ export default function useSocket() {
 
     socket.on('room:created', (data) => {
       dispatch({ type: 'SET_PLAYER_INFO', playerName: data.playerName, playerId: data.playerId });
-      dispatch({ type: 'ROOM_CREATED', roomCode: data.roomCode, players: data.players, category: data.category });
+      dispatch({ type: 'ROOM_CREATED', roomCode: data.roomCode, players: data.players, category: data.category, seriesLength: data.seriesLength });
       sessionStorage.setItem('wordrush_room', data.roomCode);
       sessionStorage.setItem('wordrush_name', data.players.find(p => p.id === data.playerId)?.name || '');
     });
 
     socket.on('room:joined', (data) => {
       dispatch({ type: 'SET_PLAYER_INFO', playerName: data.playerName, playerId: data.playerId });
-      dispatch({ type: 'ROOM_JOINED', roomCode: data.roomCode, players: data.players, category: data.category });
+      dispatch({ type: 'ROOM_JOINED', roomCode: data.roomCode, players: data.players, category: data.category, seriesLength: data.seriesLength });
       sessionStorage.setItem('wordrush_room', data.roomCode);
       sessionStorage.setItem('wordrush_name', data.players.find(p => p.id === data.playerId)?.name || '');
     });
@@ -88,6 +88,11 @@ export default function useSocket() {
       setTimeout(() => dispatch({ type: 'CLEAR_SCRAMBLE' }), data.duration);
     });
 
+    socket.on('powerup:rotate', (data) => {
+      dispatch({ type: 'ROTATE' });
+      setTimeout(() => dispatch({ type: 'CLEAR_ROTATE' }), data.duration);
+    });
+
     socket.on('powerup:bonus', () => {
       dispatch({ type: 'BONUS_ACTIVE' });
     });
@@ -96,21 +101,38 @@ export default function useSocket() {
       dispatch({ type: 'BONUS_USED' });
     });
 
-    socket.on('powerup:steal', (data) => {
+    socket.on('powerup:drain', (data) => {
       dispatch({ type: 'SCORES_UPDATE', scores: data.scores });
       const myId = socket.id;
-      if (data.thiefId === myId) {
-        dispatch({ type: 'WORD_REJECTED', message: 'Stole 1 point!' });
+      if (data.usedBy === myId) {
+        dispatch({ type: 'WORD_REJECTED', message: 'Drained 1 point!' });
       } else {
-        dispatch({ type: 'WORD_REJECTED', message: 'A point was stolen from you!' });
+        dispatch({ type: 'WORD_REJECTED', message: 'You lost a point to drain!' });
       }
       setTimeout(() => dispatch({ type: 'CLEAR_TOAST' }), 2000);
     });
 
+    socket.on('game:multiplierUpdate', (data) => {
+      dispatch({ type: 'MULTIPLIER_UPDATE', multiplier: data.multiplier });
+    });
+
+    socket.on('game:finalCountdown', (data) => {
+      dispatch({ type: 'FINAL_COUNTDOWN', seconds: data.seconds, points: data.points });
+    });
+
     socket.on('game:end', (data) => {
-      dispatch({ type: 'GAME_END', winner: data.winner, scores: data.scores });
-      sessionStorage.removeItem('wordrush_room');
-      sessionStorage.removeItem('wordrush_name');
+      dispatch({
+        type: 'GAME_END',
+        winner: data.winner,
+        scores: data.scores,
+        seriesWins: data.seriesWins,
+        seriesOver: data.seriesOver,
+        seriesWinner: data.seriesWinner,
+      });
+      if (data.seriesOver || data.seriesLength === 1) {
+        sessionStorage.removeItem('wordrush_room');
+        sessionStorage.removeItem('wordrush_name');
+      }
     });
 
     socket.on('game:state', (data) => {
@@ -143,9 +165,12 @@ export default function useSocket() {
       socket.off('powerup:freeze');
       socket.off('powerup:hint');
       socket.off('powerup:fog');
+      socket.off('powerup:rotate');
       socket.off('powerup:bonus');
       socket.off('powerup:bonusUsed');
-      socket.off('powerup:steal');
+      socket.off('powerup:drain');
+      socket.off('game:multiplierUpdate');
+      socket.off('game:finalCountdown');
       socket.off('game:end');
       socket.off('game:state');
       socket.off('player:disconnected');

@@ -11,7 +11,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export default function Grid() {
   const { state } = useGame();
-  const { grid, words, playerId, hintCells, hintWord, frozen, scrambled, bonusActive } = state;
+  const { grid, words, playerId, hintCells, hintWord, frozen, scrambled, rotated, bonusActive } = state;
   const { gridRef, draggedCells, onPointerDown, onPointerMove, onPointerUp } = useGridDrag(frozen);
 
   // Build found-cells map: cellKey -> 'self' | 'opponent'
@@ -60,7 +60,7 @@ export default function Grid() {
     <div className="relative w-full max-w-[min(90vw,500px)]">
       <div
         ref={gridRef}
-        className={`grid select-none aspect-square w-full transition-all duration-300 ${bonusActive ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''} ${scrambled ? 'animate-shake' : ''}`}
+        className={`grid select-none aspect-square w-full transition-all duration-300 ${bonusActive ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''} ${scrambled ? 'animate-shake' : ''} ${rotated ? 'rotate-180' : ''}`}
         style={{
           gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
           gridTemplateRows: `repeat(${GRID_SIZE}, 1fr)`,
@@ -112,6 +112,11 @@ export default function Grid() {
       {scrambled && (
         <div className="mt-2 text-center text-purple-400 text-sm font-bold animate-pulse">
           SCRAMBLED!
+        </div>
+      )}
+      {rotated && (
+        <div className="mt-2 text-center text-orange-400 text-sm font-bold animate-pulse">
+          ROTATED!
         </div>
       )}
     </div>

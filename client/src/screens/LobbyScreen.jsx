@@ -3,7 +3,7 @@ import { getSocket } from '../lib/socket.js';
 
 export default function LobbyScreen() {
   const { state } = useGame();
-  const { roomCode, players, category } = state;
+  const { roomCode, players, category, seriesLength, seriesWins } = state;
 
   const handleReady = () => {
     getSocket().emit('player:ready');
@@ -19,7 +19,18 @@ export default function LobbyScreen() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
       <h2 className="text-2xl font-bold mb-1">Lobby</h2>
-      <p className="text-gray-400 mb-6">Category: {category}</p>
+      <p className="text-gray-400 mb-1">Category: {category}</p>
+      <p className="text-gray-400 mb-4 text-sm">
+        {seriesLength > 1 ? `Best of ${seriesLength}` : 'Single Game'}
+      </p>
+
+      {seriesLength > 1 && me && opponent && (seriesWins[me.id] > 0 || seriesWins[opponent.id] > 0) && (
+        <div className="flex gap-4 mb-4 text-sm">
+          <span className="text-blue-400">{me.name}: {seriesWins[me.id] || 0}</span>
+          <span className="text-gray-500">-</span>
+          <span className="text-orange-400">{opponent.name}: {seriesWins[opponent.id] || 0}</span>
+        </div>
+      )}
 
       <div className="flex items-center gap-2 mb-6">
         <span className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-2xl font-mono tracking-[0.3em]">

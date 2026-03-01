@@ -10,7 +10,7 @@ function generateCode() {
   return rooms.has(code) ? generateCode() : code;
 }
 
-export function createRoom(socketId, playerName, category) {
+export function createRoom(socketId, playerName, category, seriesLength = 1) {
   const code = generateCode();
   const player = { id: socketId, name: playerName, ready: false, score: 0 };
   const room = {
@@ -19,6 +19,8 @@ export function createRoom(socketId, playerName, category) {
     players: [player],
     phase: 'lobby', // lobby | countdown | playing | results
     game: null,     // set by gameManager on start
+    seriesLength,
+    seriesWins: { [socketId]: 0 },
   };
   rooms.set(code, room);
   socketToRoom.set(socketId, code);
@@ -33,6 +35,7 @@ export function joinRoom(code, socketId, playerName) {
 
   const player = { id: socketId, name: playerName, ready: false, score: 0 };
   room.players.push(player);
+  room.seriesWins[socketId] = 0;
   socketToRoom.set(socketId, code);
   return { room };
 }

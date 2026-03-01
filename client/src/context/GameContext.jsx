@@ -12,16 +12,24 @@ const initialState = {
   grid: [],
   words: [],             // [{ word, found, foundBy, cells }]
   scores: {},            // { playerId: score }
-  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, steal: 0 },
+  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0 },
   frozen: false,
   hintCells: [],
   hintWord: null,
   scrambled: false,
+  rotated: false,
   bonusActive: false,
   countdown: null,
   winner: null,
   toast: null,
   opponentDisconnected: false,
+  seriesLength: 1,
+  seriesWins: {},
+  seriesOver: false,
+  seriesWinner: null,
+  multiplier: 1,
+  finalCountdown: null,
+  finalCountdownPoints: null,
 };
 
 function gameReducer(state, action) {
@@ -37,6 +45,7 @@ function gameReducer(state, action) {
         roomCode: action.roomCode,
         players: action.players,
         category: action.category || state.category,
+        seriesLength: action.seriesLength || 1,
       };
 
     case 'ROOM_UPDATE':
@@ -53,13 +62,19 @@ function gameReducer(state, action) {
         words: action.words,
         scores: action.scores,
         countdown: null,
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, steal: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
         scrambled: false,
+        rotated: false,
         bonusActive: false,
-              winner: null,
+        winner: null,
+        seriesOver: false,
+        seriesWinner: null,
+        multiplier: 1,
+        finalCountdown: null,
+        finalCountdownPoints: null,
       };
 
     case 'WORD_CONFIRMED': {
@@ -93,6 +108,12 @@ function gameReducer(state, action) {
     case 'CLEAR_SCRAMBLE':
       return { ...state, scrambled: false };
 
+    case 'ROTATE':
+      return { ...state, rotated: true };
+
+    case 'CLEAR_ROTATE':
+      return { ...state, rotated: false };
+
     case 'SCORES_UPDATE':
       return { ...state, scores: action.scores };
 
@@ -102,8 +123,22 @@ function gameReducer(state, action) {
     case 'BONUS_USED':
       return { ...state, bonusActive: false };
 
+    case 'MULTIPLIER_UPDATE':
+      return { ...state, multiplier: action.multiplier };
+
+    case 'FINAL_COUNTDOWN':
+      return { ...state, finalCountdown: action.seconds, finalCountdownPoints: action.points };
+
     case 'GAME_END':
-      return { ...state, phase: 'results', winner: action.winner, scores: action.scores };
+      return {
+        ...state,
+        phase: 'results',
+        winner: action.winner,
+        scores: action.scores,
+        seriesWins: action.seriesWins || state.seriesWins,
+        seriesOver: action.seriesOver || false,
+        seriesWinner: action.seriesWinner || null,
+      };
 
     case 'GAME_STATE':
       return {
@@ -116,6 +151,8 @@ function gameReducer(state, action) {
         powerups: action.powerups ?? state.powerups,
         roomCode: action.roomCode ?? state.roomCode,
         category: action.category ?? state.category,
+        seriesWins: action.seriesWins ?? state.seriesWins,
+        seriesLength: action.seriesLength ?? state.seriesLength,
       };
 
     case 'OPPONENT_DISCONNECTED':
@@ -128,13 +165,17 @@ function gameReducer(state, action) {
         grid: [],
         words: [],
         scores: {},
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, steal: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
         scrambled: false,
+        rotated: false,
         bonusActive: false,
               winner: null,
+        multiplier: 1,
+        finalCountdown: null,
+        finalCountdownPoints: null,
         players: action.players ?? state.players,
       };
 

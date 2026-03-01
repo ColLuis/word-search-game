@@ -5,9 +5,10 @@ import {
   FREEZE_COOLDOWN,
   HINT_DURATION,
   FOG_DURATION,
+  ROTATE_DURATION,
 } from './constants.js';
 
-const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'steal'];
+const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'drain', 'rotate'];
 
 export function earnPowerup(room, playerId) {
   const state = room.game.powerups[playerId];
@@ -35,7 +36,8 @@ function powerupsPayload(state) {
     hint: state.hint || 0,
     fog: state.fog || 0,
     bonus: state.bonus || 0,
-    steal: state.steal || 0,
+    drain: state.drain || 0,
+    rotate: state.rotate || 0,
   };
 }
 
@@ -106,21 +108,30 @@ export function usePowerup(room, playerId, type) {
     };
   }
 
-  if (type === 'steal') {
-    if ((state.steal || 0) <= 0) return { success: false, message: 'No steal charges' };
-    state.steal--;
+  if (type === 'drain') {
+    if ((state.drain || 0) <= 0) return { success: false, message: 'No drain charges' };
+    state.drain--;
 
     const opponent = room.players.find((p) => p.id !== playerId);
     if (!opponent || opponent.score <= 0) {
-      return { success: false, message: 'Nothing to steal' };
+      return { success: false, message: 'Opponent has no points' };
     }
 
     opponent.score = Math.max(0, opponent.score - 1);
-    const player = room.players.find((p) => p.id === playerId);
-    if (player) player.score += 1;
 
     return {
       success: true,
+      powerups: powerupsPayload(state),
+    };
+  }
+
+  if (type === 'rotate') {
+    if ((state.rotate || 0) <= 0) return { success: false, message: 'No rotate charges' };
+    state.rotate--;
+
+    return {
+      success: true,
+      duration: ROTATE_DURATION,
       powerups: powerupsPayload(state),
     };
   }

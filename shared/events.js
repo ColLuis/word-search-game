@@ -18,6 +18,8 @@ export const EVENTS = {
   GAME_START: 'game:start',
   GAME_END: 'game:end',
   GAME_STATE: 'game:state',
+  GAME_MULTIPLIER_UPDATE: 'game:multiplierUpdate',
+  GAME_FINAL_COUNTDOWN: 'game:finalCountdown',
 
   // Word events
   WORD_SUBMIT: 'word:submit',
@@ -31,5 +33,6 @@ export const EVENTS = {
   POWERUP_HINT: 'powerup:hint',
   POWERUP_FOG: 'powerup:fog',
   POWERUP_BONUS: 'powerup:bonus',
-  POWERUP_STEAL: 'powerup:steal',
+  POWERUP_DRAIN: 'powerup:drain',
+  POWERUP_ROTATE: 'powerup:rotate',
 };

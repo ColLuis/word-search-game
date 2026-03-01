@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { generateGrid } from './gridGenerator.js';
-import { WORDS_PER_GAME } from './constants.js';
+import { WORDS_PER_GAME, ESCALATION_TIERS } from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const wordLists = JSON.parse(readFileSync(join(__dirname, '../data/wordLists.json'), 'utf-8'));
@@ -42,7 +42,7 @@ export function startGame(room) {
 
   room.players.forEach((p) => {
     p.score = 0;
-    room.game.powerups[p.id] = { freeze: 0, hint: 0, fog: 0, bonus: 0, steal: 0, wordsFound: 0, lastFreezeTime: 0 };
+    room.game.powerups[p.id] = { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, wordsFound: 0, lastFreezeTime: 0 };
   });
 
   return room.game;
@@ -81,4 +81,21 @@ export function validateWordFound(room, playerId, startRow, startCol, endRow, en
 
 export function checkGameEnd(room) {
   return room.game.words.every((w) => w.found);
+}
+
+export function getWordsFoundCount(room) {
+  return room.game.words.filter((w) => w.found).length;
+}
+
+export function getCurrentMultiplier(room, offset = 0) {
+  const found = getWordsFoundCount(room) + offset;
+  let multiplier = 1;
+  for (const tier of ESCALATION_TIERS) {
+    if (found >= tier.threshold) multiplier = tier.multiplier;
+  }
+  return multiplier;
+}
+
+export function isLastWord(room) {
+  return room.game.words.filter((w) => !w.found).length === 1;
 }
