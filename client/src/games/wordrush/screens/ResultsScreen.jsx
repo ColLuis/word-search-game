@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext.jsx';
 import { getSocket } from '../lib/socket.js';
 
@@ -17,10 +18,13 @@ export default function ResultsScreen() {
     getSocket().emit('room:playAgain');
   };
 
+  const navigate = useNavigate();
+
   const handleHome = () => {
     dispatch({ type: 'RESET' });
     sessionStorage.removeItem('wordrush_room');
     sessionStorage.removeItem('wordrush_name');
+    navigate('/');
   };
 
   const iSeriesWinner = seriesWinner?.id === playerId;

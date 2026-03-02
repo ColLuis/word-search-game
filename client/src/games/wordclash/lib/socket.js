@@ -4,7 +4,7 @@ let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    socket = io({
+    socket = io('/wordclash', {
       autoConnect: false,
       transports: ['websocket', 'polling'],
     });

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getSocket } from '../lib/socket.js';
 
 const CATEGORIES = ['Animals', 'Food', 'Science', 'Sports', 'Geography'];
@@ -27,7 +28,8 @@ export default function HomeScreen() {
       <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
         WordRush
       </h1>
-      <p className="text-gray-400 mb-8">Real-time 2-player word search</p>
+      <p className="text-gray-400 mb-2">Real-time 2-player word search</p>
+      <Link to="/" className="text-gray-500 hover:text-gray-300 text-sm mb-6 transition">Back to Games</Link>
 
       {!mode && (
         <div className="flex flex-col gap-3 w-full max-w-xs">

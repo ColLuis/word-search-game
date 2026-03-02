@@ -2,6 +2,8 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { registerSocketHandlers } from './socketHandlers.js';
+import { registerWordClashHandlers } from './wordclash/socketHandlers.js';
+import { initDictionary } from './wordclash/dictionary.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -32,15 +34,32 @@ if (isProduction) {
   });
 }
 
-io.on('connection', (socket) => {
-  console.log(`Connected: ${socket.id} (transport: ${socket.conn.transport.name})`);
-  registerSocketHandlers(io, socket);
+// WordRush namespace
+const wordrushNs = io.of('/wordrush');
+wordrushNs.on('connection', (socket) => {
+  console.log(`[WordRush] Connected: ${socket.id} (transport: ${socket.conn.transport.name})`);
+  registerSocketHandlers(wordrushNs, socket);
   socket.on('disconnect', (reason) => {
-    console.log(`Disconnected: ${socket.id} (reason: ${reason})`);
+    console.log(`[WordRush] Disconnected: ${socket.id} (reason: ${reason})`);
   });
 });
 
-const PORT = process.env.PORT || 3001;
-httpServer.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+// WordClash namespace
+const wordclashNs = io.of('/wordclash');
+wordclashNs.on('connection', (socket) => {
+  console.log(`[WordClash] Connected: ${socket.id} (transport: ${socket.conn.transport.name})`);
+  registerWordClashHandlers(wordclashNs, socket);
+  socket.on('disconnect', (reason) => {
+    console.log(`[WordClash] Disconnected: ${socket.id} (reason: ${reason})`);
+  });
 });
+
+async function start() {
+  await initDictionary();
+  const PORT = process.env.PORT || 3001;
+  httpServer.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server listening on http://0.0.0.0:${PORT}`);
+  });
+}
+
+start();
