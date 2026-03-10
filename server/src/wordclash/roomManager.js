@@ -90,6 +90,32 @@ export function updateSettings(room, settings) {
   if (settings.roundTimeSeconds !== undefined) room.roundTimeSeconds = settings.roundTimeSeconds;
 }
 
+export function updateSocketId(oldId, newId) {
+  for (const room of rooms.values()) {
+    const player = room.players.find((p) => p.id === oldId);
+    if (player) {
+      player.id = newId;
+      if (room.hostId === oldId) {
+        room.hostId = newId;
+      }
+      // Update game submissions if needed
+      if (room.game?.submissions) {
+        const sub = room.game.submissions.get(oldId);
+        if (sub) {
+          room.game.submissions.delete(oldId);
+          room.game.submissions.set(newId, sub);
+        }
+      }
+      if (room.game?.scores && room.game.scores[oldId] !== undefined) {
+        room.game.scores[newId] = room.game.scores[oldId];
+        delete room.game.scores[oldId];
+      }
+      return room;
+    }
+  }
+  return null;
+}
+
 export function resetRoomToLobby(room) {
   room.phase = 'lobby';
   room.game = null;

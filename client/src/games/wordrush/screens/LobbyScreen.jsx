@@ -1,5 +1,6 @@
 import { useGame } from '../context/GameContext.jsx';
 import { getSocket } from '../lib/socket.js';
+import TutorialOverlay from '../../../components/TutorialOverlay.jsx';
 
 export default function LobbyScreen() {
   const { state } = useGame();
@@ -18,6 +19,7 @@ export default function LobbyScreen() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
+      <TutorialOverlay game="wordrush" />
       <h2 className="text-2xl font-bold mb-1">Lobby</h2>
       <p className="text-gray-400 mb-1">Category: {category}</p>
       <p className="text-gray-400 mb-4 text-sm">

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getSocket } from '../lib/socket.js';
 import { useGame } from '../context/GameContext.jsx';
+import { playWordFound, playWordRejected, playPowerupUse, playFreeze, playCountdown, playGameWin, playGameLose } from '../../../lib/sounds.js';
 
 export default function useSocket() {
   const { dispatch } = useGame();
@@ -51,6 +52,7 @@ export default function useSocket() {
 
     socket.on('game:countdown', (data) => {
       dispatch({ type: 'COUNTDOWN', count: data.count });
+      playCountdown(data.count === 0);
     });
 
     socket.on('game:start', (data) => {
@@ -59,21 +61,25 @@ export default function useSocket() {
 
     socket.on('word:confirmed', (data) => {
       dispatch({ type: 'WORD_CONFIRMED', word: data.word, foundBy: data.foundBy, scores: data.scores, cells: data.cells });
+      playWordFound();
     });
 
     socket.on('word:rejected', (data) => {
       dispatch({ type: 'WORD_REJECTED', message: data.message });
+      playWordRejected();
       setTimeout(() => dispatch({ type: 'CLEAR_TOAST' }), 2000);
     });
 
     socket.on('powerup:earned', (data) => {
       dispatch({ type: 'POWERUP_EARNED', powerups: data.powerups });
+      playPowerupUse();
     });
 
     socket.on('powerup:freeze', (data) => {
       const myId = socket.id;
       if (data.frozenPlayerId === myId) {
         dispatch({ type: 'FREEZE', frozen: true });
+        playFreeze();
         setTimeout(() => dispatch({ type: 'FREEZE', frozen: false }), data.duration);
       }
     });
@@ -129,6 +135,11 @@ export default function useSocket() {
         seriesOver: data.seriesOver,
         seriesWinner: data.seriesWinner,
       });
+      if (data.winner?.id === socket.id) {
+        playGameWin();
+      } else if (data.winner) {
+        playGameLose();
+      }
       if (data.seriesOver || data.seriesLength === 1) {
         sessionStorage.removeItem('wordrush_room');
         sessionStorage.removeItem('wordrush_name');

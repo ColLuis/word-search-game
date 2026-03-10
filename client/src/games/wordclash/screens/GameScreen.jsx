@@ -7,6 +7,7 @@ import Timer from '../components/Timer.jsx';
 import PlayerStatus from '../components/PlayerStatus.jsx';
 import WordBuilder from '../components/WordBuilder.jsx';
 import LetterBank from '../components/LetterBank.jsx';
+import ReconnectBanner from '../components/ReconnectBanner.jsx';
 
 export default function GameScreen() {
   const { state } = useGame();
@@ -56,6 +57,7 @@ export default function GameScreen() {
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="flex flex-col items-center min-h-screen px-3 py-3 max-w-md mx-auto">
+        <ReconnectBanner />
         {/* Round info + Timer */}
         <div className="flex items-center justify-between w-full mb-3">
           <div>

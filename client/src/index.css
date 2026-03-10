@@ -75,3 +75,12 @@
   50% { box-shadow: 0 0 20px 4px rgba(239, 68, 68, 0.2); }
   100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
+
+/* Celebrate pulse for win text */
+@keyframes celebrate-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-celebrate-pulse {
+  animation: celebrate-pulse 1.5s ease-in-out infinite;
+}

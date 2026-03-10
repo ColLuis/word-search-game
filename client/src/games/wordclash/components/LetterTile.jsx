@@ -1,4 +1,5 @@
 import { useDraggable } from '@dnd-kit/core';
+import { playLetterClick } from '../../../lib/sounds.js';
 
 export default function LetterTile({ tile, onClick, variant = 'bank' }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -25,7 +26,7 @@ export default function LetterTile({ tile, onClick, variant = 'bank' }) {
       style={style}
       {...listeners}
       {...attributes}
-      onClick={onClick}
+      onClick={() => { playLetterClick(); onClick?.(); }}
       className={`${baseClasses} ${variantClasses} ${isDragging ? 'opacity-50 scale-110' : 'cursor-pointer'}`}
     >
       {tile.letter}

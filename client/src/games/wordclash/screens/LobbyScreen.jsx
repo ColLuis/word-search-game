@@ -1,5 +1,6 @@
 import { useGame } from '../context/GameContext.jsx';
 import { getSocket } from '../lib/socket.js';
+import TutorialOverlay from '../../../components/TutorialOverlay.jsx';
 
 const ROUND_OPTIONS = [3, 5, 7];
 const TIMER_OPTIONS = [30, 60, 90];
@@ -24,6 +25,7 @@ export default function LobbyScreen() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
+      <TutorialOverlay game="wordclash" />
       <h2 className="text-2xl font-bold mb-4">Lobby</h2>
 
       <div className="flex items-center gap-2 mb-6">

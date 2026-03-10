@@ -17,12 +17,21 @@ export function earnPowerup(room, playerId) {
   state.wordsFound = (state.wordsFound || 0) + 1;
 
   if (state.wordsFound % WORDS_PER_POWERUP === 0) {
-    const shuffled = [...ALL_TYPES].sort(() => Math.random() - 0.5);
+    // Avoid giving the same powerup twice in a row
+    const candidates = ALL_TYPES.filter((t) => t !== state.lastEarned);
+    const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+    let earned = false;
     for (const type of shuffled) {
       if ((state[type] || 0) < MAX_POWERUP_CHARGES) {
         state[type] = (state[type] || 0) + 1;
+        state.lastEarned = type;
+        earned = true;
         break;
       }
+    }
+    // Fallback to the last-earned type if all others are maxed
+    if (!earned && state.lastEarned && (state[state.lastEarned] || 0) < MAX_POWERUP_CHARGES) {
+      state[state.lastEarned] = (state[state.lastEarned] || 0) + 1;
     }
     return powerupsPayload(state);
   }

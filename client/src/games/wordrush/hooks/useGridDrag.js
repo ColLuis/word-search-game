@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { snapToDirection, getCellsInLine } from '../lib/gridHelpers.js';
 import { getSocket } from '../lib/socket.js';
 import { GRID_SIZE } from '../lib/constants.js';
+import { playLetterClick } from '../../../lib/sounds.js';
 
 export default function useGridDrag(frozen) {
   const [dragState, setDragState] = useState(null); // { startRow, startCol, endRow, endCol }
@@ -25,6 +26,7 @@ export default function useGridDrag(frozen) {
       const cell = getCellFromPoint(e.clientX, e.clientY);
       if (!cell) return;
       e.currentTarget.setPointerCapture(e.pointerId);
+      playLetterClick();
       setDragState({ startRow: cell.row, startCol: cell.col, endRow: cell.row, endCol: cell.col });
     },
     [frozen, getCellFromPoint]

@@ -6,6 +6,7 @@ import {
   removePlayer,
   updateSettings,
   resetRoomToLobby,
+  updateSocketId,
 } from './roomManager.js';
 import {
   startRound,
@@ -20,6 +21,9 @@ import {
 import { ROUND_RESULTS_DELAY } from './constants.js';
 import { findBestWords } from './dictionary.js';
 
+const DISCONNECT_TIMEOUT = 30000;
+const disconnectTimers = new Map();
+
 function playersPayload(room) {
   return room.players.map((p) => ({
     id: p.id,
@@ -27,6 +31,14 @@ function playersPayload(room) {
     color: p.color,
     score: p.score,
   }));
+}
+
+function scoresPayload(room) {
+  const scores = {};
+  for (const p of room.players) {
+    scores[p.id] = room.game?.scores?.[p.id] ?? p.score ?? 0;
+  }
+  return scores;
 }
 
 function beginRound(io, room) {
@@ -197,37 +209,106 @@ export function registerWordClashHandlers(io, socket) {
     });
   });
 
+  // Reconnection
+  socket.on('reconnect:attempt', ({ roomCode, playerName }) => {
+    console.log(`[WordClash] reconnect:attempt from ${socket.id} - name: ${playerName}, code: ${roomCode}`);
+    const room = getRoom(roomCode);
+    if (!room) {
+      socket.emit('room:error', { message: 'Room no longer exists' });
+      return;
+    }
+
+    const existingPlayer = room.players.find((p) => p.name === playerName);
+    if (!existingPlayer) {
+      socket.emit('room:error', { message: 'Player not found in room' });
+      return;
+    }
+
+    // Clear disconnect timer
+    const timerKey = `${roomCode}:${existingPlayer.id}`;
+    if (disconnectTimers.has(timerKey)) {
+      clearTimeout(disconnectTimers.get(timerKey));
+      disconnectTimers.delete(timerKey);
+    }
+
+    const oldId = existingPlayer.id;
+    updateSocketId(oldId, socket.id);
+    socket.join(roomCode);
+
+    // Build state payload
+    const statePayload = {
+      phase: room.phase,
+      roomCode: room.code,
+      players: playersPayload(room),
+      playerId: socket.id,
+      hostId: room.hostId,
+      totalRounds: room.totalRounds,
+      roundTimeSeconds: room.roundTimeSeconds,
+      scores: scoresPayload(room),
+    };
+
+    if (room.phase === 'playing' && room.game) {
+      statePayload.letters = room.game.letters;
+      statePayload.currentRound = room.game.currentRound;
+      const submittedIds = room.game.submissions
+        ? [...room.game.submissions.keys()].filter((id) => room.game.submissions.get(id))
+        : [];
+      statePayload.submittedPlayerIds = submittedIds;
+      statePayload.iSubmitted = submittedIds.includes(socket.id);
+    }
+
+    socket.emit('game:state', statePayload);
+    socket.to(roomCode).emit('player:reconnected', { playerId: socket.id });
+  });
+
+  // Disconnect
   socket.on('disconnect', () => {
     const room = getRoomBySocket(socket.id);
     if (!room) return;
 
-    const wasPlaying = room.phase === 'playing';
+    const isInGame = room.phase === 'playing' || room.phase === 'roundResults';
 
-    // Auto-submit empty if in a round
-    if (wasPlaying) {
-      submitEmpty(room, socket.id);
-    }
+    if (isInGame) {
+      // Give them time to reconnect
+      socket.to(room.code).emit('player:disconnected', { playerId: socket.id });
+      const timerKey = `${room.code}:${socket.id}`;
+      disconnectTimers.set(
+        timerKey,
+        setTimeout(() => {
+          disconnectTimers.delete(timerKey);
+          const currentRoom = getRoom(room.code);
+          if (!currentRoom) return;
 
-    const remaining = removePlayer(socket.id);
-    if (!remaining) return;
+          // Auto-submit empty if still playing
+          if (currentRoom.phase === 'playing') {
+            submitEmpty(currentRoom, socket.id);
+          }
 
-    // If playing and only 1 player left, they auto-win
-    if (wasPlaying && remaining.players.length === 1) {
-      if (remaining.game?.roundTimer) clearTimeout(remaining.game.roundTimer);
-      if (remaining.game?.nextRoundTimer) clearTimeout(remaining.game.nextRoundTimer);
+          const remaining = removePlayer(socket.id);
+          if (!remaining) return;
 
-      remaining.phase = 'gameOver';
-      const winner = remaining.players[0];
-      const scores = remaining.game?.scores || {};
-      io.to(remaining.code).emit('game:end', {
-        winner: { id: winner.id, name: winner.name },
-        scores,
-        players: playersPayload(remaining),
-        reason: 'opponent_disconnected',
-      });
-    } else if (remaining.phase === 'playing' && allPlayersSubmitted(remaining)) {
-      finishRound(io, remaining);
+          if (remaining.players.length === 1) {
+            if (remaining.game?.roundTimer) clearTimeout(remaining.game.roundTimer);
+            if (remaining.game?.nextRoundTimer) clearTimeout(remaining.game.nextRoundTimer);
+
+            remaining.phase = 'gameOver';
+            const winner = remaining.players[0];
+            const scores = remaining.game?.scores || {};
+            io.to(remaining.code).emit('game:end', {
+              winner: { id: winner.id, name: winner.name },
+              scores,
+              players: playersPayload(remaining),
+              reason: 'opponent_disconnected',
+            });
+          } else if (remaining.phase === 'playing' && allPlayersSubmitted(remaining)) {
+            finishRound(io, remaining);
+          }
+        }, DISCONNECT_TIMEOUT)
+      );
     } else {
+      const remaining = removePlayer(socket.id);
+      if (!remaining) return;
+
       io.to(remaining.code).emit('room:update', {
         players: playersPayload(remaining),
         hostId: remaining.hostId,

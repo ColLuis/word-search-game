@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getSocket } from '../lib/socket.js';
 import { useGame } from '../context/GameContext.jsx';
+import { playRoundStart, playGameWin, playGameLose } from '../../../lib/sounds.js';
 
 export default function useSocket() {
   const { dispatch } = useGame();
@@ -14,6 +15,12 @@ export default function useSocket() {
 
     socket.on('connect', () => {
       console.log('[WordClash] Socket connected:', socket.id);
+      const savedRoom = sessionStorage.getItem('wordclash_room');
+      const savedName = sessionStorage.getItem('wordclash_name');
+      if (savedRoom && savedName) {
+        console.log('[WordClash] Auto-reconnecting to room:', savedRoom);
+        socket.emit('reconnect:attempt', { roomCode: savedRoom, playerName: savedName });
+      }
     });
 
     socket.on('connect_error', (err) => {
@@ -23,11 +30,15 @@ export default function useSocket() {
     socket.on('room:created', (data) => {
       dispatch({ type: 'SET_PLAYER_INFO', playerName: data.players.find(p => p.id === data.playerId)?.name, playerId: data.playerId });
       dispatch({ type: 'ROOM_CREATED', roomCode: data.roomCode, players: data.players, hostId: data.hostId, totalRounds: data.totalRounds, roundTimeSeconds: data.roundTimeSeconds });
+      sessionStorage.setItem('wordclash_room', data.roomCode);
+      sessionStorage.setItem('wordclash_name', data.players.find(p => p.id === data.playerId)?.name || '');
     });
 
     socket.on('room:joined', (data) => {
       dispatch({ type: 'SET_PLAYER_INFO', playerName: data.players.find(p => p.id === data.playerId)?.name, playerId: data.playerId });
       dispatch({ type: 'ROOM_JOINED', roomCode: data.roomCode, players: data.players, hostId: data.hostId, totalRounds: data.totalRounds, roundTimeSeconds: data.roundTimeSeconds });
+      sessionStorage.setItem('wordclash_room', data.roomCode);
+      sessionStorage.setItem('wordclash_name', data.players.find(p => p.id === data.playerId)?.name || '');
     });
 
     socket.on('room:update', (data) => {
@@ -41,6 +52,7 @@ export default function useSocket() {
 
     socket.on('round:start', (data) => {
       dispatch({ type: 'ROUND_START', letters: data.letters, round: data.round, totalRounds: data.totalRounds, roundTimeSeconds: data.roundTimeSeconds });
+      playRoundStart();
     });
 
     socket.on('word:validation', (data) => {
@@ -57,10 +69,28 @@ export default function useSocket() {
 
     socket.on('game:end', (data) => {
       dispatch({ type: 'GAME_END', winner: data.winner, scores: data.scores, players: data.players });
+      if (data.winner?.id === socket.id) {
+        playGameWin();
+      } else if (data.winner) {
+        playGameLose();
+      }
+      sessionStorage.removeItem('wordclash_room');
+      sessionStorage.removeItem('wordclash_name');
     });
 
     socket.on('game:state', (data) => {
+      if (data.playerId) {
+        dispatch({ type: 'SET_PLAYER_INFO', playerId: data.playerId });
+      }
       dispatch({ type: 'GAME_STATE', ...data });
+    });
+
+    socket.on('player:disconnected', () => {
+      dispatch({ type: 'OPPONENT_DISCONNECTED', disconnected: true });
+    });
+
+    socket.on('player:reconnected', () => {
+      dispatch({ type: 'OPPONENT_DISCONNECTED', disconnected: false });
     });
 
     return () => {
@@ -76,6 +106,8 @@ export default function useSocket() {
       socket.off('round:end');
       socket.off('game:end');
       socket.off('game:state');
+      socket.off('player:disconnected');
+      socket.off('player:reconnected');
     };
   }, [dispatch]);
 

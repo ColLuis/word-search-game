@@ -21,6 +21,7 @@ const initialState = {
   scores: {},             // { playerId: totalScore }
   winner: null,
   toast: null,
+  opponentDisconnected: false,
 };
 
 function gameReducer(state, action) {
@@ -99,18 +100,23 @@ function gameReducer(state, action) {
       return {
         ...state,
         phase: action.phase,
+        roomCode: action.roomCode ?? state.roomCode,
         players: action.players ?? state.players,
         hostId: action.hostId ?? state.hostId,
         totalRounds: action.totalRounds ?? state.totalRounds,
         roundTimeSeconds: action.roundTimeSeconds ?? state.roundTimeSeconds,
-        scores: {},
-        iSubmitted: false,
-        submittedPlayerIds: [],
+        scores: action.scores ?? {},
+        iSubmitted: action.iSubmitted ?? false,
+        submittedPlayerIds: action.submittedPlayerIds ?? [],
         roundSubmissions: [],
-        letters: [],
-        currentRound: 0,
+        letters: action.letters ?? [],
+        currentRound: action.currentRound ?? 0,
         winner: null,
+        opponentDisconnected: false,
       };
+
+    case 'OPPONENT_DISCONNECTED':
+      return { ...state, opponentDisconnected: action.disconnected };
 
     case 'CLEAR_TOAST':
       return { ...state, toast: null };

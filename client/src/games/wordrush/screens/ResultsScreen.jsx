@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext.jsx';
 import { getSocket } from '../lib/socket.js';
+import { launchConfetti } from '../../../lib/confetti.js';
 
 export default function ResultsScreen() {
   const { state, dispatch } = useGame();
@@ -29,11 +31,17 @@ export default function ResultsScreen() {
 
   const iSeriesWinner = seriesWinner?.id === playerId;
 
+  useEffect(() => {
+    if (iWon || iSeriesWinner) {
+      launchConfetti();
+    }
+  }, [iWon, iSeriesWinner]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
       {seriesOver && seriesLength > 1 ? (
         <>
-          <h2 className="text-4xl font-bold mb-2">
+          <h2 className={`text-4xl font-bold mb-2 ${iSeriesWinner ? 'animate-celebrate-pulse' : ''}`}>
             {iSeriesWinner ? 'Series Winner!' : 'Series Over!'}
           </h2>
           <p className="text-gray-400 mb-6">
@@ -42,7 +50,7 @@ export default function ResultsScreen() {
         </>
       ) : (
         <>
-          <h2 className="text-4xl font-bold mb-2">
+          <h2 className={`text-4xl font-bold mb-2 ${iWon ? 'animate-celebrate-pulse' : ''}`}>
             {tie ? 'Tie Game!' : iWon ? 'You Win!' : 'You Lose!'}
           </h2>
           <p className="text-gray-400 mb-6">
