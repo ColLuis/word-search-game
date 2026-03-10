@@ -2,19 +2,11 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { generateGrid } from './gridGenerator.js';
+import { shuffle } from './utils.js';
 import { WORDS_PER_GAME, ESCALATION_TIERS } from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const wordLists = JSON.parse(readFileSync(join(__dirname, '../data/wordLists.json'), 'utf-8'));
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 export function startGame(room) {
   const categoryWords = wordLists[room.category];

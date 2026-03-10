@@ -1,4 +1,5 @@
 import { GRID_SIZE } from './constants.js';
+import { shuffle } from './utils.js';
 
 const DIRECTIONS = [
   { dr: 0, dc: 1 },   // horizontal right
@@ -32,15 +33,6 @@ function placeWord(grid, word, row, col, dir) {
     cells.push({ row: r, col: c });
   }
   return cells;
-}
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 export function generateGrid(words) {

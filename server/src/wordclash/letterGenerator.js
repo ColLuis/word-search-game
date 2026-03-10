@@ -1,5 +1,6 @@
 import { LETTER_FREQUENCIES, VOWELS, CONSONANTS, DEFAULTS } from './constants.js';
 import { canFormLongWord } from './dictionary.js';
+import { shuffle } from '../utils.js';
 
 function weightedRandom(pool) {
   const entries = pool.map((letter) => ({
@@ -13,14 +14,6 @@ function weightedRandom(pool) {
     if (r <= 0) return e.letter;
   }
   return entries[entries.length - 1].letter;
-}
-
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
 }
 
 function generateLetterSet() {
