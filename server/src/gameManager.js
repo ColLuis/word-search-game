@@ -20,7 +20,8 @@ export function startGame(room) {
   const categoryWords = wordLists[room.category];
   if (!categoryWords) throw new Error(`Unknown category: ${room.category}`);
 
-  const selectedWords = shuffle(categoryWords).slice(0, WORDS_PER_GAME);
+  const uniqueWords = [...new Set(categoryWords)];
+  const selectedWords = shuffle(uniqueWords).slice(0, WORDS_PER_GAME);
   const { grid, placements } = generateGrid(selectedWords);
 
   const words = placements.map((p) => ({
