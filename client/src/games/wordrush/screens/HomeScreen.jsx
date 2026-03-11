@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getSocket } from '../lib/socket.js';
 
-const CATEGORIES = ['Animals', 'Food', 'Science', 'Sports', 'Geography'];
+const CATEGORIES = ['Animals', 'Food', 'Science', 'Sports', 'Geography', 'Music', 'Technology', 'Space', 'Movies', 'Nature'];
 
 export default function HomeScreen() {
   const [mode, setMode] = useState(null); // 'create' | 'join'
