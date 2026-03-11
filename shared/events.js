@@ -35,4 +35,8 @@ export const EVENTS = {
   POWERUP_BONUS: 'powerup:bonus',
   POWERUP_DRAIN: 'powerup:drain',
   POWERUP_ROTATE: 'powerup:rotate',
+  POWERUP_SHIELD: 'powerup:shield',
+  POWERUP_SHIELD_BLOCK: 'powerup:shieldBlock',
+  POWERUP_BLOCKED: 'powerup:blocked',
+  POWERUP_BLIND: 'powerup:blind',
 };

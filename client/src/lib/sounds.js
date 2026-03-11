@@ -133,3 +133,25 @@ export function playRoundStart() {
   playTone(660, 0.12, 'sine', 0.12);
   vibrate(30);
 }
+
+export function playShieldBlock() {
+  const ac = getCtx();
+  const t = ac.currentTime;
+  const osc = ac.createOscillator();
+  const gain = ac.createGain();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(1200, t);
+  osc.frequency.exponentialRampToValueAtTime(400, t + 0.2);
+  gain.gain.setValueAtTime(0.15, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+  osc.connect(gain);
+  gain.connect(ac.destination);
+  osc.start(t);
+  osc.stop(t + 0.2);
+  vibrate([30, 20, 30]);
+}
+
+export function playBlind() {
+  playTone(200, 0.3, 'sawtooth', 0.1);
+  vibrate(150);
+}

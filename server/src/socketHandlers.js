@@ -11,7 +11,7 @@ import {
   getRoom,
 } from './roomManager.js';
 import { startGame, validateWordFound, checkGameEnd, getCurrentMultiplier, isLastWord } from './gameManager.js';
-import { earnPowerup, usePowerup } from './powerupManager.js';
+import { earnPowerup, usePowerup, checkShield } from './powerupManager.js';
 import { COUNTDOWN_SECONDS, DISCONNECT_TIMEOUT, FINAL_COUNTDOWN_TIERS } from './constants.js';
 
 const disconnectTimers = new Map();
@@ -247,8 +247,25 @@ export function registerSocketHandlers(io, socket) {
       return;
     }
 
+    const opponent = room.players.find((p) => p.id !== socket.id);
+    const isOffensive = ['freeze', 'fog', 'rotate', 'drain', 'blind'].includes(type);
+
+    // Check if opponent has a shield active for offensive powerups
+    if (isOffensive && opponent && checkShield(room, opponent.id)) {
+      // Revert side effects that usePowerup already applied
+      if (type === 'drain') {
+        opponent.score += 1;
+      } else if (type === 'freeze') {
+        const oppState = room.game.powerups[opponent.id];
+        if (oppState) oppState.frozenUntil = 0;
+      }
+      io.to(opponent.id).emit('powerup:shieldBlock', { blocked: type });
+      socket.emit('powerup:blocked', { type });
+      socket.emit('powerup:earned', { powerups: result.powerups });
+      return;
+    }
+
     if (type === 'freeze') {
-      const opponent = room.players.find((p) => p.id !== socket.id);
       if (opponent) {
         io.to(room.code).emit('powerup:freeze', {
           frozenPlayerId: opponent.id,
@@ -258,7 +275,6 @@ export function registerSocketHandlers(io, socket) {
     } else if (type === 'hint') {
       socket.emit('powerup:hint', { cells: result.cells, word: result.word, duration: result.duration });
     } else if (type === 'fog') {
-      const opponent = room.players.find((p) => p.id !== socket.id);
       if (opponent) {
         io.to(opponent.id).emit('powerup:fog', {
           duration: result.duration,
@@ -267,7 +283,6 @@ export function registerSocketHandlers(io, socket) {
     } else if (type === 'bonus') {
       socket.emit('powerup:bonus', {});
     } else if (type === 'rotate') {
-      const opponent = room.players.find((p) => p.id !== socket.id);
       if (opponent) {
         io.to(opponent.id).emit('powerup:rotate', {
           duration: result.duration,
@@ -278,6 +293,14 @@ export function registerSocketHandlers(io, socket) {
         scores: scoresPayload(room),
         usedBy: socket.id,
       });
+    } else if (type === 'shield') {
+      socket.emit('powerup:shield', {});
+    } else if (type === 'blind') {
+      if (opponent) {
+        io.to(opponent.id).emit('powerup:blind', {
+          duration: result.duration,
+        });
+      }
     }
 
     socket.emit('powerup:earned', { powerups: result.powerups });

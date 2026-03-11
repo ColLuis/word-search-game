@@ -6,9 +6,10 @@ import {
   HINT_DURATION,
   FOG_DURATION,
   ROTATE_DURATION,
+  BLIND_DURATION,
 } from './constants.js';
 
-const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'drain', 'rotate'];
+const ALL_TYPES = ['freeze', 'hint', 'fog', 'bonus', 'drain', 'rotate', 'shield', 'blind'];
 
 export function earnPowerup(room, playerId) {
   const state = room.game.powerups[playerId];
@@ -47,6 +48,8 @@ function powerupsPayload(state) {
     bonus: state.bonus || 0,
     drain: state.drain || 0,
     rotate: state.rotate || 0,
+    shield: state.shield || 0,
+    blind: state.blind || 0,
   };
 }
 
@@ -145,5 +148,36 @@ export function usePowerup(room, playerId, type) {
     };
   }
 
+  if (type === 'shield') {
+    if ((state.shield || 0) <= 0) return { success: false, message: 'No shield charges' };
+    state.shield--;
+    state.shielded = true;
+
+    return {
+      success: true,
+      powerups: powerupsPayload(state),
+    };
+  }
+
+  if (type === 'blind') {
+    if ((state.blind || 0) <= 0) return { success: false, message: 'No blind charges' };
+    state.blind--;
+
+    return {
+      success: true,
+      duration: BLIND_DURATION,
+      powerups: powerupsPayload(state),
+    };
+  }
+
   return { success: false, message: 'Unknown powerup type' };
+}
+
+export function checkShield(room, targetId) {
+  const targetState = room.game.powerups[targetId];
+  if (targetState && targetState.shielded) {
+    targetState.shielded = false;
+    return true;
+  }
+  return false;
 }

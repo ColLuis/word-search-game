@@ -11,7 +11,7 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export default function Grid() {
   const { state } = useGame();
-  const { grid, words, playerId, hintCells, hintWord, frozen, scrambled, rotated, bonusActive } = state;
+  const { grid, words, playerId, hintCells, hintWord, frozen, scrambled, rotated, bonusActive, shielded } = state;
   const { gridRef, draggedCells, onPointerDown, onPointerMove, onPointerUp } = useGridDrag(frozen);
 
   // Build found-cells map: cellKey -> 'self' | 'opponent'
@@ -60,7 +60,7 @@ export default function Grid() {
     <div className="relative w-full max-w-[min(90vw,500px)]">
       <div
         ref={gridRef}
-        className={`grid select-none aspect-square w-full transition-all duration-300 ${bonusActive ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''} ${scrambled ? 'animate-shake' : ''} ${rotated ? 'rotate-180' : ''}`}
+        className={`grid select-none aspect-square w-full transition-all duration-300 ${bonusActive ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''} ${shielded ? 'ring-2 ring-sky-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''} ${scrambled ? 'animate-shake' : ''} ${rotated ? 'rotate-180' : ''}`}
         style={{
           gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
           gridTemplateRows: `repeat(${GRID_SIZE}, 1fr)`,
@@ -106,6 +106,13 @@ export default function Grid() {
         <div className="mt-2 text-center">
           <span className="bg-green-500 text-black text-sm font-extrabold px-4 py-1 rounded-full animate-bounce inline-block">
             2x BONUS — Next word is worth double!
+          </span>
+        </div>
+      )}
+      {shielded && (
+        <div className="mt-2 text-center">
+          <span className="bg-sky-500 text-white text-sm font-extrabold px-4 py-1 rounded-full inline-block">
+            SHIELD ACTIVE
           </span>
         </div>
       )}

@@ -6,6 +6,7 @@ export const FREEZE_COOLDOWN = 10000;
 export const HINT_DURATION = 3000;
 export const FOG_DURATION = 5000;
 export const ROTATE_DURATION = 5000;
+export const BLIND_DURATION = 5000;
 export const FOG_SIZE = 3;
 export const FOG_PATCHES = 3;
 export const BONUS_MULTIPLIER = 2;

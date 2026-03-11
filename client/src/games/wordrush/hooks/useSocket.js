@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getSocket } from '../lib/socket.js';
 import { useGame } from '../context/GameContext.jsx';
-import { playWordFound, playWordRejected, playPowerupUse, playFreeze, playCountdown, playGameWin, playGameLose } from '../../../lib/sounds.js';
+import { playWordFound, playWordRejected, playPowerupUse, playFreeze, playCountdown, playGameWin, playGameLose, playShieldBlock, playBlind } from '../../../lib/sounds.js';
 
 export default function useSocket() {
   const { dispatch } = useGame();
@@ -118,6 +118,28 @@ export default function useSocket() {
       setTimeout(() => dispatch({ type: 'CLEAR_TOAST' }), 2000);
     });
 
+    socket.on('powerup:shield', () => {
+      dispatch({ type: 'SHIELD_ACTIVE' });
+    });
+
+    socket.on('powerup:shieldBlock', (data) => {
+      dispatch({ type: 'SHIELD_CONSUMED' });
+      playShieldBlock();
+      dispatch({ type: 'WORD_REJECTED', message: `Shield blocked ${data.blocked}!` });
+      setTimeout(() => dispatch({ type: 'CLEAR_TOAST' }), 2000);
+    });
+
+    socket.on('powerup:blocked', (data) => {
+      dispatch({ type: 'WORD_REJECTED', message: `Your ${data.type} was blocked by a shield!` });
+      setTimeout(() => dispatch({ type: 'CLEAR_TOAST' }), 2000);
+    });
+
+    socket.on('powerup:blind', (data) => {
+      dispatch({ type: 'BLIND' });
+      playBlind();
+      setTimeout(() => dispatch({ type: 'CLEAR_BLIND' }), data.duration);
+    });
+
     socket.on('game:multiplierUpdate', (data) => {
       dispatch({ type: 'MULTIPLIER_UPDATE', multiplier: data.multiplier });
     });
@@ -180,6 +202,10 @@ export default function useSocket() {
       socket.off('powerup:bonus');
       socket.off('powerup:bonusUsed');
       socket.off('powerup:drain');
+      socket.off('powerup:shield');
+      socket.off('powerup:shieldBlock');
+      socket.off('powerup:blocked');
+      socket.off('powerup:blind');
       socket.off('game:multiplierUpdate');
       socket.off('game:finalCountdown');
       socket.off('game:end');

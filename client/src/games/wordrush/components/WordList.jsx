@@ -2,7 +2,22 @@ import { useGame } from '../context/GameContext.jsx';
 
 export default function WordList() {
   const { state } = useGame();
-  const { words, playerId } = state;
+  const { words, playerId, blinded } = state;
+
+  if (blinded) {
+    return (
+      <div className="relative grid grid-cols-3 gap-1 px-2 mt-2">
+        {words.map((w) => (
+          <div key={w.word} className="text-xs py-1 px-2 rounded text-center font-semibold bg-gray-800 text-gray-800">
+            {'?????'}
+          </div>
+        ))}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-pink-400 text-sm font-bold animate-pulse">BLINDED!</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-3 gap-1 px-2 mt-2">

@@ -12,13 +12,15 @@ const initialState = {
   grid: [],
   words: [],             // [{ word, found, foundBy, cells }]
   scores: {},            // { playerId: score }
-  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0 },
+  powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
   frozen: false,
   hintCells: [],
   hintWord: null,
   scrambled: false,
   rotated: false,
   bonusActive: false,
+  shielded: false,
+  blinded: false,
   countdown: null,
   winner: null,
   toast: null,
@@ -62,13 +64,15 @@ function gameReducer(state, action) {
         words: action.words,
         scores: action.scores,
         countdown: null,
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
         scrambled: false,
         rotated: false,
         bonusActive: false,
+        shielded: false,
+        blinded: false,
         winner: null,
         seriesOver: false,
         seriesWinner: null,
@@ -123,6 +127,18 @@ function gameReducer(state, action) {
     case 'BONUS_USED':
       return { ...state, bonusActive: false };
 
+    case 'SHIELD_ACTIVE':
+      return { ...state, shielded: true };
+
+    case 'SHIELD_CONSUMED':
+      return { ...state, shielded: false };
+
+    case 'BLIND':
+      return { ...state, blinded: true };
+
+    case 'CLEAR_BLIND':
+      return { ...state, blinded: false };
+
     case 'MULTIPLIER_UPDATE':
       return { ...state, multiplier: action.multiplier };
 
@@ -165,13 +181,15 @@ function gameReducer(state, action) {
         grid: [],
         words: [],
         scores: {},
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0 },
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
         frozen: false,
         hintCells: [],
         hintWord: null,
         scrambled: false,
         rotated: false,
         bonusActive: false,
+        shielded: false,
+        blinded: false,
               winner: null,
         multiplier: 1,
         finalCountdown: null,
