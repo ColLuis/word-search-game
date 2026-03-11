@@ -8,6 +8,10 @@ function getCtx() {
   return ctx;
 }
 
+function vibrate(pattern) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
 function playTone(freq, duration, type = 'sine', gainVal = 0.15) {
   const ac = getCtx();
   const osc = ac.createOscillator();
@@ -24,6 +28,7 @@ function playTone(freq, duration, type = 'sine', gainVal = 0.15) {
 
 export function playLetterClick() {
   playTone(800, 0.05, 'sine', 0.08);
+  vibrate(10);
 }
 
 export function playWordFound() {
@@ -41,10 +46,12 @@ export function playWordFound() {
     osc.start(t + i * 0.08);
     osc.stop(t + i * 0.08 + 0.08);
   });
+  vibrate([30, 50, 30]);
 }
 
 export function playWordRejected() {
   playTone(150, 0.2, 'sawtooth', 0.1);
+  vibrate([50, 30, 50]);
 }
 
 export function playPowerupUse() {
@@ -61,6 +68,7 @@ export function playPowerupUse() {
     osc.start(t + i * 0.05);
     osc.stop(t + i * 0.05 + 0.06);
   });
+  vibrate([20, 30, 20, 30, 40]);
 }
 
 export function playFreeze() {
@@ -76,10 +84,12 @@ export function playFreeze() {
   gain.connect(ac.destination);
   osc.start(t);
   osc.stop(t + 0.3);
+  vibrate(200);
 }
 
 export function playCountdown(final = false) {
   playTone(final ? 880 : 600, 0.15, 'sine', 0.12);
+  vibrate(final ? 80 : 40);
 }
 
 export function playGameWin() {
@@ -97,6 +107,7 @@ export function playGameWin() {
     osc.start(t + i * 0.1);
     osc.stop(t + 0.4);
   });
+  vibrate([50, 50, 50, 50, 100]);
 }
 
 export function playGameLose() {
@@ -115,8 +126,10 @@ export function playGameLose() {
     osc.start(t + i * 0.12);
     osc.stop(t + 0.4);
   });
+  vibrate([100, 50, 150]);
 }
 
 export function playRoundStart() {
   playTone(660, 0.12, 'sine', 0.12);
+  vibrate(30);
 }

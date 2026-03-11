@@ -61,7 +61,7 @@ export default function HomeScreen() {
               placeholder="Room code"
               value={roomCode}
               onChange={(e) => { setRoomCode(e.target.value.toUpperCase()); setError(''); }}
-              maxLength={4}
+              maxLength={6}
               className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 uppercase tracking-widest focus:outline-none focus:border-orange-500"
             />
           )}

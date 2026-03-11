@@ -111,9 +111,9 @@ export default function useSocket() {
       dispatch({ type: 'SCORES_UPDATE', scores: data.scores });
       const myId = socket.id;
       if (data.usedBy === myId) {
-        dispatch({ type: 'WORD_REJECTED', message: 'Drained 1 point!' });
+        dispatch({ type: 'WORD_REJECTED', message: 'You drained your opponent\'s point!' });
       } else {
-        dispatch({ type: 'WORD_REJECTED', message: 'You lost a point to drain!' });
+        dispatch({ type: 'WORD_REJECTED', message: 'Your opponent drained your point!' });
       }
       setTimeout(() => dispatch({ type: 'CLEAR_TOAST' }), 2000);
     });

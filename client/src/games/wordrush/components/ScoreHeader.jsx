@@ -44,14 +44,9 @@ export default function ScoreHeader() {
       {showCountdown && (
         <div className="flex flex-col items-center gap-0.5">
           <span className="text-xs font-bold text-red-400 animate-pulse">
-            One word remaining!
-          </span>
-          <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-            finalCountdownPoints >= 4 ? 'text-green-400 bg-green-400/20' :
-            finalCountdownPoints >= 2 ? 'text-yellow-400 bg-yellow-400/20' :
-            'text-red-400 bg-red-400/20'
-          }`}>
-            {finalCountdownPoints}pts — {finalCountdown}s
+            1 word left! {finalCountdownPoints > 1
+              ? `${finalCountdownPoints}pt bonus for the next ${finalCountdown % 10 || 10}s`
+              : 'Last chance — 1pt!'}
           </span>
         </div>
       )}
