@@ -1,9 +1,18 @@
 import { useGame } from '../context/GameContext.jsx';
+import { getSocket } from '../lib/socket.js';
 import ScoreBoard from '../components/ScoreBoard.jsx';
 
 export default function RoundResultsScreen() {
   const { state } = useGame();
-  const { roundSubmissions, scores, players, playerId, currentRound, totalRounds, bestWords } = state;
+  const { roundSubmissions, scores, players, playerId, currentRound, totalRounds, bestWords, readyPlayerIds, isLastRound } = state;
+
+  const iReady = readyPlayerIds.includes(playerId);
+  const readyCount = readyPlayerIds.length;
+  const totalPlayers = players.length;
+
+  const handleReady = () => {
+    getSocket().emit('round:ready');
+  };
 
   // Sort submissions by score descending
   const sorted = [...roundSubmissions].sort((a, b) => b.score - a.score);
@@ -80,7 +89,22 @@ export default function RoundResultsScreen() {
       <h3 className="text-sm text-gray-500 uppercase mb-2">Standings</h3>
       <ScoreBoard players={players} scores={scores} />
 
-      <p className="text-gray-600 text-xs mt-6 animate-pulse">Next round starting...</p>
+      <div className="w-full mt-6">
+        {isLastRound ? (
+          <p className="text-center text-gray-400 text-sm animate-pulse">Final results coming...</p>
+        ) : !iReady ? (
+          <button
+            onClick={handleReady}
+            className="w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg transition"
+          >
+            Ready for Next Round
+          </button>
+        ) : (
+          <p className="text-center text-green-400 text-sm font-semibold animate-pulse">
+            Waiting for others... ({readyCount}/{totalPlayers})
+          </p>
+        )}
+      </div>
     </div>
   );
 }

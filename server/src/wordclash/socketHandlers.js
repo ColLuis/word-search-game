@@ -18,7 +18,6 @@ import {
   isGameOver,
   getWinner,
 } from './gameManager.js';
-import { ROUND_RESULTS_DELAY } from './constants.js';
 import { findBestWords } from './dictionary.js';
 
 const DISCONNECT_TIMEOUT = 30000;
@@ -75,6 +74,9 @@ function finishRound(io, room) {
   const bestWords = findBestWords(roundLetters, 5);
 
   room.phase = 'roundResults';
+  room.readyVotes = new Set();
+
+  const lastRound = isGameOver(room);
 
   io.to(room.code).emit('round:end', {
     submissions: result.submissions,
@@ -82,22 +84,30 @@ function finishRound(io, room) {
     round: result.round,
     totalRounds: room.totalRounds,
     bestWords,
+    isLastRound: lastRound,
   });
 
-  // After delay, start next round or end game
-  room.game.nextRoundTimer = setTimeout(() => {
-    if (isGameOver(room)) {
-      room.phase = 'gameOver';
-      const winner = getWinner(room);
-      io.to(room.code).emit('game:end', {
-        winner: winner ? { id: winner.id, name: winner.name } : null,
-        scores: result.scores,
-        players: playersPayload(room),
-      });
-    } else {
-      beginRound(io, room);
-    }
-  }, ROUND_RESULTS_DELAY);
+  // If last round, auto-advance to game over after a short delay
+  if (lastRound) {
+    room.game.nextRoundTimer = setTimeout(() => {
+      advanceAfterResults(io, room);
+    }, 5000);
+  }
+}
+
+function advanceAfterResults(io, room) {
+  if (isGameOver(room)) {
+    room.phase = 'gameOver';
+    const winner = getWinner(room);
+    const scores = room.game?.scores || {};
+    io.to(room.code).emit('game:end', {
+      winner: winner ? { id: winner.id, name: winner.name } : null,
+      scores,
+      players: playersPayload(room),
+    });
+  } else {
+    beginRound(io, room);
+  }
 }
 
 export function registerWordClashHandlers(io, socket) {
@@ -189,6 +199,24 @@ export function registerWordClashHandlers(io, socket) {
     // Check if all submitted → end round early
     if (allPlayersSubmitted(room)) {
       finishRound(io, room);
+    }
+  });
+
+  socket.on('round:ready', () => {
+    const room = getRoomBySocket(socket.id);
+    if (!room || room.phase !== 'roundResults') return;
+
+    if (!room.readyVotes) room.readyVotes = new Set();
+    room.readyVotes.add(socket.id);
+
+    io.to(room.code).emit('round:readyVote', {
+      playerId: socket.id,
+      readyPlayerIds: [...room.readyVotes],
+    });
+
+    if (room.readyVotes.size >= room.players.length) {
+      room.readyVotes = null;
+      advanceAfterResults(io, room);
     }
   });
 

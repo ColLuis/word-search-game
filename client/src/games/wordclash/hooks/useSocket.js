@@ -64,7 +64,11 @@ export default function useSocket() {
     });
 
     socket.on('round:end', (data) => {
-      dispatch({ type: 'ROUND_END', submissions: data.submissions, scores: data.scores, round: data.round, bestWords: data.bestWords });
+      dispatch({ type: 'ROUND_END', submissions: data.submissions, scores: data.scores, round: data.round, bestWords: data.bestWords, isLastRound: data.isLastRound });
+    });
+
+    socket.on('round:readyVote', (data) => {
+      dispatch({ type: 'ROUND_READY_VOTE', readyPlayerIds: data.readyPlayerIds });
     });
 
     socket.on('game:end', (data) => {
@@ -104,6 +108,7 @@ export default function useSocket() {
       socket.off('word:validation');
       socket.off('player:submitted');
       socket.off('round:end');
+      socket.off('round:readyVote');
       socket.off('game:end');
       socket.off('game:state');
       socket.off('player:disconnected');

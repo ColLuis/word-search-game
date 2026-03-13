@@ -22,6 +22,8 @@ const initialState = {
   winner: null,
   toast: null,
   opponentDisconnected: false,
+  readyPlayerIds: [],
+  isLastRound: false,
 };
 
 function gameReducer(state, action) {
@@ -85,6 +87,14 @@ function gameReducer(state, action) {
         bestWords: action.bestWords || [],
         scores: action.scores,
         currentRound: action.round,
+        readyPlayerIds: [],
+        isLastRound: action.isLastRound || false,
+      };
+
+    case 'ROUND_READY_VOTE':
+      return {
+        ...state,
+        readyPlayerIds: action.readyPlayerIds,
       };
 
     case 'GAME_END':
