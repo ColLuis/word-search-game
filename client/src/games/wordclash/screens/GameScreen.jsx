@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { DndContext, TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useGame } from '../context/GameContext.jsx';
 import useTimer from '../hooks/useTimer.js';
@@ -35,8 +35,20 @@ export default function GameScreen() {
 
   const { remaining } = useTimer(roundTimeSeconds, onTimerExpire);
 
+  const [confirming, setConfirming] = useState(false);
+
+  // Reset confirm state when the word changes
+  useEffect(() => {
+    setConfirming(false);
+  }, [currentWord]);
+
   const handleSubmit = () => {
     if (iSubmitted) return;
+    if (!confirming) {
+      setConfirming(true);
+      return;
+    }
+    setConfirming(false);
     if (currentWord.length >= 3) {
       submitWord();
     } else {
@@ -113,12 +125,16 @@ export default function GameScreen() {
               onClick={handleSubmit}
               disabled={currentWord.length > 0 && currentWord.length < 3}
               className={`flex-1 font-semibold py-3 rounded-lg transition ${
-                isValid
-                  ? 'bg-green-600 hover:bg-green-500 text-white'
-                  : 'bg-orange-600 hover:bg-orange-500 text-white'
+                confirming
+                  ? 'bg-yellow-600 hover:bg-yellow-500 text-white animate-pulse'
+                  : isValid
+                    ? 'bg-green-600 hover:bg-green-500 text-white'
+                    : 'bg-orange-600 hover:bg-orange-500 text-white'
               } disabled:bg-gray-700 disabled:text-gray-500`}
             >
-              {currentWord.length === 0 ? 'Skip' : 'Submit'}
+              {confirming
+                ? (currentWord.length === 0 ? 'Confirm Skip?' : 'Confirm?')
+                : (currentWord.length === 0 ? 'Skip' : 'Submit')}
             </button>
           </div>
         ) : (

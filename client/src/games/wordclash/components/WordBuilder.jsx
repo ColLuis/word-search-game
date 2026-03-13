@@ -27,7 +27,7 @@ export default function WordBuilder({ tiles, onTileClick, validationStatus, curr
     <div className="w-full">
       <div
         ref={setNodeRef}
-        className={`flex flex-wrap justify-center gap-2 p-3 rounded-xl min-h-[76px] border-2 border-dashed transition-colors ${
+        className={`flex justify-center gap-1 sm:gap-2 p-2 sm:p-3 rounded-xl min-h-[56px] border-2 border-dashed transition-colors ${
           isOver ? 'border-orange-400 bg-orange-400/10' : 'border-gray-600 bg-gray-800/30'
         }`}
       >

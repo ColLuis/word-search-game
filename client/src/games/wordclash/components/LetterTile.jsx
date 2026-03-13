@@ -13,7 +13,7 @@ export default function LetterTile({ tile, onClick, variant = 'bank' }) {
       }
     : undefined;
 
-  const baseClasses = 'w-14 h-14 rounded-lg flex items-center justify-center text-xl font-bold select-none transition-shadow';
+  const baseClasses = 'w-[calc((100vw-4.5rem)/10)] max-w-14 aspect-square rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold select-none transition-shadow';
 
   const variantClasses =
     variant === 'builder'

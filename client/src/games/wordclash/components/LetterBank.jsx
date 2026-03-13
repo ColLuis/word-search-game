@@ -7,7 +7,7 @@ export default function LetterBank({ tiles, onTileClick }) {
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-wrap justify-center gap-2 p-3 rounded-xl min-h-[76px] transition-colors ${
+      className={`flex justify-center gap-1 sm:gap-2 p-2 sm:p-3 rounded-xl min-h-[56px] transition-colors ${
         isOver ? 'bg-gray-700/50' : 'bg-gray-800/50'
       }`}
     >

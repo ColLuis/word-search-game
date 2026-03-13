@@ -37,6 +37,7 @@ class Trie {
 }
 
 let trie = null;
+let commonWords = null;
 
 export async function initDictionary() {
   trie = new Trie();
@@ -53,7 +54,18 @@ export async function initDictionary() {
     }
   }
 
-  console.log(`[WordClash] Dictionary loaded: ${count} words (${DEFAULTS.MIN_WORD_LENGTH}-${DEFAULTS.MAX_WORD_LENGTH} letters)`);
+  // Load common words for filtering best-word suggestions
+  commonWords = new Set();
+  const commonPath = path.join(__dirname, '../../data/common_words.txt');
+  const commonContent = readFileSync(commonPath, 'utf-8');
+  for (const line of commonContent.split(/\r?\n/)) {
+    const word = line.trim().toUpperCase();
+    if (word.length >= DEFAULTS.MIN_WORD_LENGTH && word.length <= DEFAULTS.MAX_WORD_LENGTH) {
+      commonWords.add(word);
+    }
+  }
+
+  console.log(`[WordClash] Dictionary loaded: ${count} words, ${commonWords.size} common words`);
 }
 
 export function isValidWord(word) {
@@ -93,9 +105,10 @@ export function findBestWords(letters, topN = 5) {
   }
   const found = [];
   collectWords(trie.root, available, '', found);
-  // Sort by length desc, then alphabetically
-  found.sort((a, b) => b.length - a.length || a.localeCompare(b));
-  return found.slice(0, topN);
+  // Filter to common words only, then sort by length desc
+  const common = found.filter((w) => commonWords && commonWords.has(w));
+  common.sort((a, b) => b.length - a.length || a.localeCompare(b));
+  return common.slice(0, topN);
 }
 
 function collectWords(node, available, prefix, results) {
