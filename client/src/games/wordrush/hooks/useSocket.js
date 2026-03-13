@@ -144,6 +144,23 @@ export default function useSocket() {
       dispatch({ type: 'MULTIPLIER_UPDATE', multiplier: data.multiplier });
     });
 
+    socket.on('powerup:choices', (data) => {
+      dispatch({ type: 'POWERUP_CHOICES', choices: data.choices });
+    });
+
+    socket.on('room:rematchVote', (data) => {
+      dispatch({ type: 'REMATCH_VOTE', playerId: data.playerId });
+    });
+
+    socket.on('room:playAgainVote', (data) => {
+      dispatch({ type: 'PLAY_AGAIN_VOTE', playerId: data.playerId });
+    });
+
+    socket.on('room:rematchStart', (data) => {
+      sessionStorage.setItem('wordrush_room', data.roomCode);
+      dispatch({ type: 'REMATCH_START', players: data.players, seriesLength: data.seriesLength });
+    });
+
     socket.on('game:finalCountdown', (data) => {
       dispatch({ type: 'FINAL_COUNTDOWN', seconds: data.seconds, points: data.points });
     });
@@ -156,15 +173,12 @@ export default function useSocket() {
         seriesWins: data.seriesWins,
         seriesOver: data.seriesOver,
         seriesWinner: data.seriesWinner,
+        recap: data.recap,
       });
       if (data.winner?.id === socket.id) {
         playGameWin();
       } else if (data.winner) {
         playGameLose();
-      }
-      if (data.seriesOver || data.seriesLength === 1) {
-        sessionStorage.removeItem('wordrush_room');
-        sessionStorage.removeItem('wordrush_name');
       }
     });
 
@@ -206,6 +220,10 @@ export default function useSocket() {
       socket.off('powerup:shieldBlock');
       socket.off('powerup:blocked');
       socket.off('powerup:blind');
+      socket.off('powerup:choices');
+      socket.off('room:rematchVote');
+      socket.off('room:playAgainVote');
+      socket.off('room:rematchStart');
       socket.off('game:multiplierUpdate');
       socket.off('game:finalCountdown');
       socket.off('game:end');

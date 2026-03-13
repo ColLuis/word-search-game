@@ -11,7 +11,7 @@ import {
   getRoom,
 } from './roomManager.js';
 import { startGame, validateWordFound, checkGameEnd, getCurrentMultiplier, isLastWord } from './gameManager.js';
-import { earnPowerup, usePowerup, checkShield } from './powerupManager.js';
+import { earnPowerup, usePowerup, checkShield, confirmPowerupChoice } from './powerupManager.js';
 import { COUNTDOWN_SECONDS, DISCONNECT_TIMEOUT, FINAL_COUNTDOWN_TIERS } from './constants.js';
 
 const disconnectTimers = new Map();
@@ -122,6 +122,10 @@ export function registerSocketHandlers(io, socket) {
       return;
     }
 
+    // Record timestamp for recap
+    const wordObj = room.game.words.find(w => w.word === result.word);
+    if (wordObj) wordObj.foundAt = Date.now();
+
     // Update score (escalating value + bonus multiplier)
     const player = room.players.find((p) => p.id === socket.id);
     if (player) {
@@ -155,10 +159,12 @@ export function registerSocketHandlers(io, socket) {
       words: wordsPayload,
     });
 
-    // Check powerup earning
+    // Check powerup earning — send choices for player to pick
     const powerupResult = earnPowerup(room, socket.id);
     if (powerupResult) {
-      socket.emit('powerup:earned', { powerups: powerupResult });
+      socket.emit('powerup:choices', { choices: powerupResult.choices });
+      // Also send updated counts (in case auto-resolve happened)
+      socket.emit('powerup:earned', { powerups: powerupResult.powerups });
     }
 
     // Emit multiplier update if it changed
@@ -225,6 +231,18 @@ export function registerSocketHandlers(io, socket) {
       const seriesOver = room.seriesLength === 1 || (winner && room.seriesWins[winner.id] >= winsNeeded);
       const seriesWinner = seriesOver && winner ? { id: winner.id, name: winner.name } : null;
 
+      // Build recap data
+      const startedAt = room.game.startedAt || Date.now();
+      const wordDetails = room.game.words.map((w) => ({
+        word: w.word,
+        foundBy: w.foundBy,
+        foundAtMs: w.foundAt ? w.foundAt - startedAt : null,
+      }));
+      const foundWords = wordDetails.filter((w) => w.foundAtMs !== null);
+      const fastestFind = foundWords.length > 0
+        ? foundWords.reduce((min, w) => (w.foundAtMs < min.foundAtMs ? w : min))
+        : null;
+
       io.to(room.code).emit('game:end', {
         winner,
         scores,
@@ -232,6 +250,12 @@ export function registerSocketHandlers(io, socket) {
         seriesLength: room.seriesLength,
         seriesOver,
         seriesWinner,
+        recap: {
+          wordDetails,
+          fastestFind,
+          powerupsUsed: room.game.powerupsUsed || {},
+          gameDuration: Date.now() - startedAt,
+        },
       });
     }
   });
@@ -303,24 +327,76 @@ export function registerSocketHandlers(io, socket) {
       }
     }
 
+    // Track powerup usage for recap
+    if (room.game.powerupsUsed) {
+      room.game.powerupsUsed[socket.id] = (room.game.powerupsUsed[socket.id] || 0) + 1;
+    }
+
     socket.emit('powerup:earned', { powerups: result.powerups });
   });
 
-  // Room: Play Again
+  // Powerup: Choose (from roulette)
+  socket.on('powerup:choose', ({ type }) => {
+    const room = getRoomBySocket(socket.id);
+    if (!room || room.phase !== 'playing') return;
+
+    const result = confirmPowerupChoice(room, socket.id, type);
+    if (result) {
+      socket.emit('powerup:earned', { powerups: result });
+    }
+  });
+
+  // Room: Rematch
+  socket.on('room:rematch', () => {
+    const room = getRoomBySocket(socket.id);
+    if (!room || room.phase !== 'results') return;
+
+    if (!room.rematchVotes) room.rematchVotes = new Set();
+    room.rematchVotes.add(socket.id);
+
+    socket.to(room.code).emit('room:rematchVote', { playerId: socket.id });
+
+    if (room.rematchVotes.size >= 2) {
+      // Both players want rematch — reset and go to lobby
+      room.rematchVotes = null;
+      room.phase = 'lobby';
+      room.game = null;
+      room.players.forEach((p) => { p.ready = false; p.score = 0; });
+      Object.keys(room.seriesWins).forEach((k) => { room.seriesWins[k] = 0; });
+
+      io.to(room.code).emit('room:rematchStart', {
+        roomCode: room.code,
+        players: playersPayload(room),
+        category: room.category,
+        seriesLength: room.seriesLength,
+      });
+    }
+  });
+
+  // Room: Play Again (both players must agree)
   socket.on('room:playAgain', () => {
     const room = getRoomBySocket(socket.id);
-    if (!room) return;
-    if (room.game && room.game.finalCountdownInterval) {
-      clearInterval(room.game.finalCountdownInterval);
+    if (!room || room.phase !== 'results') return;
+
+    if (!room.playAgainVotes) room.playAgainVotes = new Set();
+    room.playAgainVotes.add(socket.id);
+
+    socket.to(room.code).emit('room:playAgainVote', { playerId: socket.id });
+
+    if (room.playAgainVotes.size >= 2) {
+      room.playAgainVotes = null;
+      if (room.game && room.game.finalCountdownInterval) {
+        clearInterval(room.game.finalCountdownInterval);
+      }
+      resetRoomToLobby(room);
+      io.to(room.code).emit('room:update', { players: playersPayload(room) });
+      io.to(room.code).emit('game:state', {
+        phase: 'lobby',
+        players: playersPayload(room),
+        seriesWins: room.seriesWins,
+        seriesLength: room.seriesLength,
+      });
     }
-    resetRoomToLobby(room);
-    io.to(room.code).emit('room:update', { players: playersPayload(room) });
-    io.to(room.code).emit('game:state', {
-      phase: 'lobby',
-      players: playersPayload(room),
-      seriesWins: room.seriesWins,
-      seriesLength: room.seriesLength,
-    });
   });
 
   // Reconnection

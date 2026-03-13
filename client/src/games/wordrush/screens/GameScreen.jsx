@@ -6,6 +6,7 @@ import ScoreHeader from '../components/ScoreHeader.jsx';
 import PowerupBar from '../components/PowerupBar.jsx';
 import CountdownOverlay from '../components/CountdownOverlay.jsx';
 import FreezeOverlay from '../components/FreezeOverlay.jsx';
+import PowerupRoulette from '../components/PowerupRoulette.jsx';
 import ReconnectBanner from '../components/ReconnectBanner.jsx';
 import Toast from '../components/Toast.jsx';
 
@@ -13,8 +14,10 @@ export default function GameScreen() {
   const { state } = useGame();
 
   useEffect(() => {
-    if (state.phase === 'playing') {
+    if (state.phase === 'countdown' || state.phase === 'playing') {
       window.scrollTo(0, 0);
+      // Ensure scroll happens after browser layout
+      requestAnimationFrame(() => window.scrollTo(0, 0));
     }
   }, [state.phase]);
 
@@ -22,6 +25,7 @@ export default function GameScreen() {
     <div className="flex flex-col items-center min-h-screen px-2 py-2">
       <CountdownOverlay />
       <FreezeOverlay />
+      <PowerupRoulette />
       <ReconnectBanner />
       <Toast />
 

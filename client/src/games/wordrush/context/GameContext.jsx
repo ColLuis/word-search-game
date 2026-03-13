@@ -32,6 +32,10 @@ const initialState = {
   multiplier: 1,
   finalCountdown: null,
   finalCountdownPoints: null,
+  recap: null,
+  powerupChoices: null,
+  rematchVotes: [],
+  playAgainVotes: [],
 };
 
 function gameReducer(state, action) {
@@ -79,6 +83,9 @@ function gameReducer(state, action) {
         multiplier: 1,
         finalCountdown: null,
         finalCountdownPoints: null,
+        recap: null,
+        powerupChoices: null,
+        rematchVotes: [],
       };
 
     case 'WORD_CONFIRMED': {
@@ -139,6 +146,33 @@ function gameReducer(state, action) {
     case 'CLEAR_BLIND':
       return { ...state, blinded: false };
 
+    case 'POWERUP_CHOICES':
+      return { ...state, powerupChoices: action.choices };
+
+    case 'POWERUP_CHOICE_MADE':
+      return { ...state, powerupChoices: null };
+
+    case 'REMATCH_VOTE':
+      return { ...state, rematchVotes: [...new Set([...state.rematchVotes, action.playerId])] };
+
+    case 'PLAY_AGAIN_VOTE':
+      return { ...state, playAgainVotes: [...new Set([...state.playAgainVotes, action.playerId])] };
+
+    case 'REMATCH_START':
+      return {
+        ...state,
+        phase: 'lobby',
+        grid: [], words: [], scores: {}, winner: null,
+        seriesOver: false, seriesWinner: null, seriesWins: {},
+        rematchVotes: [],
+        recap: null,
+        powerupChoices: null,
+        shielded: false, blinded: false,
+        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
+        players: action.players,
+        seriesLength: action.seriesLength,
+      };
+
     case 'MULTIPLIER_UPDATE':
       return { ...state, multiplier: action.multiplier };
 
@@ -154,6 +188,9 @@ function gameReducer(state, action) {
         seriesWins: action.seriesWins || state.seriesWins,
         seriesOver: action.seriesOver || false,
         seriesWinner: action.seriesWinner || null,
+        recap: action.recap || null,
+        rematchVotes: [],
+        playAgainVotes: [],
       };
 
     case 'GAME_STATE':
@@ -194,6 +231,9 @@ function gameReducer(state, action) {
         multiplier: 1,
         finalCountdown: null,
         finalCountdownPoints: null,
+        recap: null,
+        powerupChoices: null,
+        rematchVotes: [],
         players: action.players ?? state.players,
       };
 
