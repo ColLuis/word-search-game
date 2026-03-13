@@ -35,6 +35,11 @@ export default function GameScreen() {
 
   const { remaining } = useTimer(roundTimeSeconds, onTimerExpire);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+  }, [currentRound]);
+
   const [confirming, setConfirming] = useState(false);
 
   // Reset confirm state when the word changes
