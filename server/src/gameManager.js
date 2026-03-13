@@ -31,11 +31,14 @@ export function startGame(room) {
     grid,
     words,
     powerups: {}, // playerId -> { freeze: N, hint: N, wordsFound: N, lastFreezeTime: 0 }
+    startedAt: Date.now(),
+    powerupsUsed: {},
   };
 
   room.players.forEach((p) => {
     p.score = 0;
     room.game.powerups[p.id] = { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0, wordsFound: 0, lastFreezeTime: 0 };
+    room.game.powerupsUsed[p.id] = 0;
   });
 
   return room.game;

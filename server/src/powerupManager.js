@@ -18,26 +18,36 @@ export function earnPowerup(room, playerId) {
   state.wordsFound = (state.wordsFound || 0) + 1;
 
   if (state.wordsFound % WORDS_PER_POWERUP === 0) {
-    // Avoid giving the same powerup twice in a row
-    const candidates = ALL_TYPES.filter((t) => t !== state.lastEarned);
+    // Auto-resolve any pending choice before offering new ones
+    if (state.pendingChoices && state.pendingChoices.length > 0) {
+      const autoType = state.pendingChoices[0];
+      state[autoType] = (state[autoType] || 0) + 1;
+      state.lastEarned = autoType;
+      state.pendingChoices = null;
+    }
+
+    const candidates = ALL_TYPES.filter((t) => t !== state.lastEarned && (state[t] || 0) < MAX_POWERUP_CHARGES);
     const shuffled = [...candidates].sort(() => Math.random() - 0.5);
-    let earned = false;
-    for (const type of shuffled) {
-      if ((state[type] || 0) < MAX_POWERUP_CHARGES) {
-        state[type] = (state[type] || 0) + 1;
-        state.lastEarned = type;
-        earned = true;
-        break;
-      }
-    }
-    // Fallback to the last-earned type if all others are maxed
-    if (!earned && state.lastEarned && (state[state.lastEarned] || 0) < MAX_POWERUP_CHARGES) {
-      state[state.lastEarned] = (state[state.lastEarned] || 0) + 1;
-    }
-    return powerupsPayload(state);
+    const choices = shuffled.slice(0, Math.min(3, shuffled.length));
+
+    if (choices.length === 0) return null;
+
+    state.pendingChoices = choices;
+    return { choices, powerups: powerupsPayload(state) };
   }
 
   return null;
+}
+
+export function confirmPowerupChoice(room, playerId, chosenType) {
+  const state = room.game.powerups[playerId];
+  if (!state || !state.pendingChoices) return null;
+  if (!state.pendingChoices.includes(chosenType)) return null;
+
+  state[chosenType] = (state[chosenType] || 0) + 1;
+  state.lastEarned = chosenType;
+  state.pendingChoices = null;
+  return powerupsPayload(state);
 }
 
 function powerupsPayload(state) {
