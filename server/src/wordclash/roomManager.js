@@ -119,5 +119,11 @@ export function updateSocketId(oldId, newId) {
 export function resetRoomToLobby(room) {
   room.phase = 'lobby';
   room.game = null;
-  room.players.forEach((p) => { p.score = 0; });
+  room.players.forEach((p) => {
+    p.score = 0;
+  });
+}
+
+export function clearAllRooms() {
+  rooms.clear();
 }

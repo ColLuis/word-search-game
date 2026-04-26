@@ -6,11 +6,15 @@
     "dev": "node --watch src/index.js",
     "test": "vitest run"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "express": "^4.21.2",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "socket.io-client": "^4.8.3",
     "vitest": "^4.0.18"
   }
 }

@@ -1,4 +1,4 @@
-import { LETTER_FREQUENCIES, VOWELS, CONSONANTS, DEFAULTS } from './constants.js';
+import { LETTER_FREQUENCIES, VOWELS, CONSONANTS } from './constants.js';
 import { canFormLongWord } from './dictionary.js';
 import { shuffle } from '../utils.js';
 
