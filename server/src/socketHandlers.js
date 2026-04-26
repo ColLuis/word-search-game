@@ -10,7 +10,13 @@ import {
   resetRoomToLobby,
   getRoom,
 } from './roomManager.js';
-import { startGame, validateWordFound, checkGameEnd, getCurrentMultiplier, isLastWord } from './gameManager.js';
+import {
+  startGame,
+  validateWordFound,
+  checkGameEnd,
+  getCurrentMultiplier,
+  isLastWord,
+} from './gameManager.js';
 import { earnPowerup, usePowerup, checkShield, confirmPowerupChoice } from './powerupManager.js';
 import { COUNTDOWN_SECONDS, DISCONNECT_TIMEOUT, FINAL_COUNTDOWN_TIERS } from './constants.js';
 
@@ -62,7 +68,9 @@ function startCountdown(io, room) {
 export function registerSocketHandlers(io, socket) {
   // Room: Create
   socket.on('room:create', ({ playerName, category, seriesLength }) => {
-    console.log(`room:create from ${socket.id} - name: ${playerName}, category: ${category}, seriesLength: ${seriesLength}`);
+    console.log(
+      `room:create from ${socket.id} - name: ${playerName}, category: ${category}, seriesLength: ${seriesLength}`
+    );
     const room = createRoom(socket.id, playerName, category, seriesLength || 1);
     socket.join(room.code);
     console.log(`Room ${room.code} created with player ${playerName}`);
@@ -103,7 +111,9 @@ export function registerSocketHandlers(io, socket) {
       console.log(`player:ready - no room found for ${socket.id}`);
       return;
     }
-    console.log(`Room ${room.code}: players=${room.players.length}, ready=${room.players.filter(p => p.ready).length}`);
+    console.log(
+      `Room ${room.code}: players=${room.players.length}, ready=${room.players.filter((p) => p.ready).length}`
+    );
     io.to(room.code).emit('room:update', { players: playersPayload(room) });
     if (allPlayersReady(room)) {
       console.log(`Room ${room.code}: all ready, starting countdown`);
@@ -123,7 +133,7 @@ export function registerSocketHandlers(io, socket) {
     }
 
     // Record timestamp for recap
-    const wordObj = room.game.words.find(w => w.word === result.word);
+    const wordObj = room.game.words.find((w) => w.word === result.word);
     if (wordObj) wordObj.foundAt = Date.now();
 
     // Update score (escalating value + bonus multiplier)
@@ -228,7 +238,8 @@ export function registerSocketHandlers(io, socket) {
       }
 
       const winsNeeded = Math.ceil(room.seriesLength / 2);
-      const seriesOver = room.seriesLength === 1 || (winner && room.seriesWins[winner.id] >= winsNeeded);
+      const seriesOver =
+        room.seriesLength === 1 || (winner && room.seriesWins[winner.id] >= winsNeeded);
       const seriesWinner = seriesOver && winner ? { id: winner.id, name: winner.name } : null;
 
       // Build recap data
@@ -239,9 +250,10 @@ export function registerSocketHandlers(io, socket) {
         foundAtMs: w.foundAt ? w.foundAt - startedAt : null,
       }));
       const foundWords = wordDetails.filter((w) => w.foundAtMs !== null);
-      const fastestFind = foundWords.length > 0
-        ? foundWords.reduce((min, w) => (w.foundAtMs < min.foundAtMs ? w : min))
-        : null;
+      const fastestFind =
+        foundWords.length > 0
+          ? foundWords.reduce((min, w) => (w.foundAtMs < min.foundAtMs ? w : min))
+          : null;
 
       io.to(room.code).emit('game:end', {
         winner,
@@ -297,7 +309,11 @@ export function registerSocketHandlers(io, socket) {
         });
       }
     } else if (type === 'hint') {
-      socket.emit('powerup:hint', { cells: result.cells, word: result.word, duration: result.duration });
+      socket.emit('powerup:hint', {
+        cells: result.cells,
+        word: result.word,
+        duration: result.duration,
+      });
     } else if (type === 'fog') {
       if (opponent) {
         io.to(opponent.id).emit('powerup:fog', {
@@ -361,8 +377,13 @@ export function registerSocketHandlers(io, socket) {
       room.rematchVotes = null;
       room.phase = 'lobby';
       room.game = null;
-      room.players.forEach((p) => { p.ready = false; p.score = 0; });
-      Object.keys(room.seriesWins).forEach((k) => { room.seriesWins[k] = 0; });
+      room.players.forEach((p) => {
+        p.ready = false;
+        p.score = 0;
+      });
+      Object.keys(room.seriesWins).forEach((k) => {
+        room.seriesWins[k] = 0;
+      });
 
       io.to(room.code).emit('room:rematchStart', {
         roomCode: room.code,
@@ -473,10 +494,12 @@ export function registerSocketHandlers(io, socket) {
               currentRoom.phase = 'results';
               const forfeitWinner = { id: opponent.id, name: opponent.name };
               if (currentRoom.seriesWins) {
-                currentRoom.seriesWins[opponent.id] = (currentRoom.seriesWins[opponent.id] || 0) + 1;
+                currentRoom.seriesWins[opponent.id] =
+                  (currentRoom.seriesWins[opponent.id] || 0) + 1;
               }
               const winsNeeded = Math.ceil(currentRoom.seriesLength / 2);
-              const seriesOver = currentRoom.seriesLength === 1 || (currentRoom.seriesWins[opponent.id] >= winsNeeded);
+              const seriesOver =
+                currentRoom.seriesLength === 1 || currentRoom.seriesWins[opponent.id] >= winsNeeded;
               const seriesWinner = seriesOver ? forfeitWinner : null;
               io.to(roomCode).emit('game:end', {
                 winner: forfeitWinner,

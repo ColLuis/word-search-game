@@ -21,9 +21,7 @@ export default function PlayerStatus({ players, playerId, submittedPlayerIds, sc
             </div>
             <span className="font-semibold">{isMe ? 'You' : p.name}</span>
             <span className="text-gray-400">{score}</span>
-            {submitted && (
-              <span className="text-green-400 text-xs">&#10003;</span>
-            )}
+            {submitted && <span className="text-green-400 text-xs">&#10003;</span>}
           </div>
         );
       })}

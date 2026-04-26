@@ -4,7 +4,17 @@ import ScoreBoard from '../components/ScoreBoard.jsx';
 
 export default function RoundResultsScreen() {
   const { state } = useGame();
-  const { roundSubmissions, scores, players, playerId, currentRound, totalRounds, bestWords, readyPlayerIds, isLastRound } = state;
+  const {
+    roundSubmissions,
+    scores,
+    players,
+    playerId,
+    currentRound,
+    totalRounds,
+    bestWords,
+    readyPlayerIds,
+    isLastRound,
+  } = state;
 
   const iReady = readyPlayerIds.includes(playerId);
   const readyCount = readyPlayerIds.length;
@@ -23,7 +33,9 @@ export default function RoundResultsScreen() {
   return (
     <div className="flex flex-col items-center min-h-screen px-4 py-6 max-w-md mx-auto">
       <h2 className="text-2xl font-bold mb-1">Round {currentRound} Results</h2>
-      <p className="text-gray-400 text-sm mb-6">{totalRounds - currentRound} round{totalRounds - currentRound !== 1 ? 's' : ''} remaining</p>
+      <p className="text-gray-400 text-sm mb-6">
+        {totalRounds - currentRound} round{totalRounds - currentRound !== 1 ? 's' : ''} remaining
+      </p>
 
       {/* All players' words */}
       <div className="w-full space-y-2 mb-6">
@@ -59,9 +71,7 @@ export default function RoundResultsScreen() {
                 <p className="text-xl font-bold" style={{ color: player.color }}>
                   +{sub.score}
                 </p>
-                {sub.word && (
-                  <p className="text-xs text-gray-500">{sub.word.length} letters</p>
-                )}
+                {sub.word && <p className="text-xs text-gray-500">{sub.word.length} letters</p>}
               </div>
             </div>
           );

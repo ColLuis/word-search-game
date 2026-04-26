@@ -12,12 +12,7 @@ export default function LetterBank({ tiles, onTileClick }) {
       }`}
     >
       {tiles.map((tile) => (
-        <LetterTile
-          key={tile.id}
-          tile={tile}
-          variant="bank"
-          onClick={() => onTileClick(tile.id)}
-        />
+        <LetterTile key={tile.id} tile={tile} variant="bank" onClick={() => onTileClick(tile.id)} />
       ))}
       {tiles.length === 0 && (
         <p className="text-gray-600 text-sm self-center">All letters placed</p>

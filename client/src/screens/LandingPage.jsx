@@ -33,7 +33,9 @@ export default function LandingPage() {
             className="block bg-gray-800 border border-gray-700 rounded-xl p-5 hover:border-gray-500 transition group"
           >
             <div className="flex items-center justify-between mb-2">
-              <h2 className={`text-2xl font-bold bg-gradient-to-r ${game.gradient} bg-clip-text text-transparent`}>
+              <h2
+                className={`text-2xl font-bold bg-gradient-to-r ${game.gradient} bg-clip-text text-transparent`}
+              >
                 {game.name}
               </h2>
               <span className="text-xs text-gray-500 bg-gray-700 px-2 py-1 rounded-full">

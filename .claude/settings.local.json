@@ -14,7 +14,12 @@
       "Bash(git:*)",
       "WebSearch",
       "Bash(npx vercel:*)",
-      "Bash(tailscale version:*)"
+      "Bash(tailscale version:*)",
+      "Bash(npm install *)",
+      "Bash(npx husky *)",
+      "Bash(npm test *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(gh pr create --title 'Add CI pipeline, linting, and integration test infrastructure' --body ' *)"
     ]
   }
 }

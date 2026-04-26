@@ -239,7 +239,9 @@ export function registerWordClashHandlers(io, socket) {
 
   // Reconnection
   socket.on('reconnect:attempt', ({ roomCode, playerName }) => {
-    console.log(`[WordClash] reconnect:attempt from ${socket.id} - name: ${playerName}, code: ${roomCode}`);
+    console.log(
+      `[WordClash] reconnect:attempt from ${socket.id} - name: ${playerName}, code: ${roomCode}`
+    );
     const room = getRoom(roomCode);
     if (!room) {
       socket.emit('room:error', { message: 'Room no longer exists' });

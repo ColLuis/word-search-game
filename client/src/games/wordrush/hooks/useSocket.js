@@ -1,7 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { getSocket } from '../lib/socket.js';
 import { useGame } from '../context/GameContext.jsx';
-import { playWordFound, playWordRejected, playPowerupUse, playFreeze, playCountdown, playGameWin, playGameLose, playShieldBlock, playBlind } from '../../../lib/sounds.js';
+import {
+  playWordFound,
+  playWordRejected,
+  playPowerupUse,
+  playFreeze,
+  playCountdown,
+  playGameWin,
+  playGameLose,
+  playShieldBlock,
+  playBlind,
+} from '../../../lib/sounds.js';
 
 export default function useSocket() {
   const { dispatch } = useGame();
@@ -30,16 +40,34 @@ export default function useSocket() {
 
     socket.on('room:created', (data) => {
       dispatch({ type: 'SET_PLAYER_INFO', playerName: data.playerName, playerId: data.playerId });
-      dispatch({ type: 'ROOM_CREATED', roomCode: data.roomCode, players: data.players, category: data.category, seriesLength: data.seriesLength });
+      dispatch({
+        type: 'ROOM_CREATED',
+        roomCode: data.roomCode,
+        players: data.players,
+        category: data.category,
+        seriesLength: data.seriesLength,
+      });
       sessionStorage.setItem('wordrush_room', data.roomCode);
-      sessionStorage.setItem('wordrush_name', data.players.find(p => p.id === data.playerId)?.name || '');
+      sessionStorage.setItem(
+        'wordrush_name',
+        data.players.find((p) => p.id === data.playerId)?.name || ''
+      );
     });
 
     socket.on('room:joined', (data) => {
       dispatch({ type: 'SET_PLAYER_INFO', playerName: data.playerName, playerId: data.playerId });
-      dispatch({ type: 'ROOM_JOINED', roomCode: data.roomCode, players: data.players, category: data.category, seriesLength: data.seriesLength });
+      dispatch({
+        type: 'ROOM_JOINED',
+        roomCode: data.roomCode,
+        players: data.players,
+        category: data.category,
+        seriesLength: data.seriesLength,
+      });
       sessionStorage.setItem('wordrush_room', data.roomCode);
-      sessionStorage.setItem('wordrush_name', data.players.find(p => p.id === data.playerId)?.name || '');
+      sessionStorage.setItem(
+        'wordrush_name',
+        data.players.find((p) => p.id === data.playerId)?.name || ''
+      );
     });
 
     socket.on('room:update', (data) => {
@@ -60,7 +88,13 @@ export default function useSocket() {
     });
 
     socket.on('word:confirmed', (data) => {
-      dispatch({ type: 'WORD_CONFIRMED', word: data.word, foundBy: data.foundBy, scores: data.scores, cells: data.cells });
+      dispatch({
+        type: 'WORD_CONFIRMED',
+        word: data.word,
+        foundBy: data.foundBy,
+        scores: data.scores,
+        cells: data.cells,
+      });
       playWordFound();
     });
 
@@ -111,7 +145,7 @@ export default function useSocket() {
       dispatch({ type: 'SCORES_UPDATE', scores: data.scores });
       const myId = socket.id;
       if (data.usedBy === myId) {
-        dispatch({ type: 'WORD_REJECTED', message: 'You drained your opponent\'s point!' });
+        dispatch({ type: 'WORD_REJECTED', message: "You drained your opponent's point!" });
       } else {
         dispatch({ type: 'WORD_REJECTED', message: 'Your opponent drained your point!' });
       }

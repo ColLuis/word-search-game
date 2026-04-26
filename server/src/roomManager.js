@@ -18,7 +18,7 @@ export function createRoom(socketId, playerName, category, seriesLength = 1) {
     category,
     players: [player],
     phase: 'lobby', // lobby | countdown | playing | results
-    game: null,     // set by gameManager on start
+    game: null, // set by gameManager on start
     seriesLength,
     seriesWins: { [socketId]: 0 },
   };
@@ -110,4 +110,9 @@ export function deleteRoom(code) {
     room.players.forEach((p) => socketToRoom.delete(p.id));
     rooms.delete(code);
   }
+}
+
+export function clearAllRooms() {
+  rooms.clear();
+  socketToRoom.clear();
 }

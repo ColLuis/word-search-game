@@ -7,15 +7,26 @@ import { launchConfetti } from '../../../lib/confetti.js';
 function formatTime(ms) {
   if (ms == null) return '—';
   const s = ms / 1000;
-  return s < 60 ? `${s.toFixed(1)}s` : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  return s < 60
+    ? `${s.toFixed(1)}s`
+    : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 }
 
 export default function ResultsScreen() {
   const { state, dispatch } = useGame();
   const {
-    winner, scores, players, playerId, words,
-    seriesWins, seriesLength, seriesOver, seriesWinner,
-    recap, rematchVotes, playAgainVotes,
+    winner,
+    scores,
+    players,
+    playerId,
+    words,
+    seriesWins,
+    seriesLength,
+    seriesOver,
+    seriesWinner,
+    recap,
+    rematchVotes,
+    playAgainVotes,
   } = state;
   const navigate = useNavigate();
 
@@ -43,7 +54,10 @@ export default function ResultsScreen() {
     if (iWon || iSeriesWinner) launchConfetti();
     const t1 = setTimeout(() => setShowWords(true), 400);
     const t2 = setTimeout(() => setShowStats(true), 800);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [iWon, iSeriesWinner]);
 
   const handlePlayAgain = () => {
@@ -71,7 +85,9 @@ export default function ResultsScreen() {
       {/* Header */}
       {seriesOver && seriesLength > 1 ? (
         <>
-          <h2 className={`text-4xl font-bold mb-1 ${iSeriesWinner ? 'animate-celebrate-pulse text-yellow-400' : 'text-white'}`}>
+          <h2
+            className={`text-4xl font-bold mb-1 ${iSeriesWinner ? 'animate-celebrate-pulse text-yellow-400' : 'text-white'}`}
+          >
             {iSeriesWinner ? 'Series Winner!' : 'Series Over!'}
           </h2>
           <p className="text-gray-400 mb-4">
@@ -80,23 +96,33 @@ export default function ResultsScreen() {
         </>
       ) : (
         <>
-          <h2 className={`text-4xl font-bold mb-1 ${iWon ? 'animate-celebrate-pulse text-yellow-400' : tie ? 'text-gray-300' : 'text-red-400'}`}>
+          <h2
+            className={`text-4xl font-bold mb-1 ${iWon ? 'animate-celebrate-pulse text-yellow-400' : tie ? 'text-gray-300' : 'text-red-400'}`}
+          >
             {tie ? 'Tie Game!' : iWon ? 'You Win!' : 'You Lose!'}
           </h2>
           <p className="text-gray-400 mb-4">
-            {tie ? 'Evenly matched!' : iWon ? 'Great word hunting!' : `${winner.name} found more words`}
+            {tie
+              ? 'Evenly matched!'
+              : iWon
+                ? 'Great word hunting!'
+                : `${winner.name} found more words`}
           </p>
         </>
       )}
 
       {/* Score Cards */}
       <div className="flex gap-4 mb-4 w-full">
-        <div className={`flex-1 rounded-xl p-3 text-center ${iWon ? 'bg-blue-900/60 ring-2 ring-blue-400' : 'bg-gray-800'}`}>
+        <div
+          className={`flex-1 rounded-xl p-3 text-center ${iWon ? 'bg-blue-900/60 ring-2 ring-blue-400' : 'bg-gray-800'}`}
+        >
           <p className="text-xs text-gray-400">{me?.name || 'You'}</p>
           <p className="text-3xl font-black text-blue-400">{myScore}</p>
           <p className="text-xs text-gray-500">{myWordsFound} words</p>
         </div>
-        <div className={`flex-1 rounded-xl p-3 text-center ${!tie && !iWon ? 'bg-orange-900/60 ring-2 ring-orange-400' : 'bg-gray-800'}`}>
+        <div
+          className={`flex-1 rounded-xl p-3 text-center ${!tie && !iWon ? 'bg-orange-900/60 ring-2 ring-orange-400' : 'bg-gray-800'}`}
+        >
           <p className="text-xs text-gray-400">{opponent?.name || 'Opponent'}</p>
           <p className="text-3xl font-black text-orange-400">{oppScore}</p>
           <p className="text-xs text-gray-500">{oppWordsFound} words</p>
@@ -114,7 +140,9 @@ export default function ResultsScreen() {
             <div className="text-gray-500 text-xl font-bold self-center">—</div>
             <div className="text-center">
               <p className="text-xs text-gray-400">{opponent?.name}</p>
-              <p className="text-xl font-bold text-orange-400">{opponent ? seriesWins[opponent.id] || 0 : 0}</p>
+              <p className="text-xl font-bold text-orange-400">
+                {opponent ? seriesWins[opponent.id] || 0 : 0}
+              </p>
             </div>
           </div>
         </div>
@@ -128,16 +156,21 @@ export default function ResultsScreen() {
               <p className="text-[10px] text-yellow-500 uppercase font-bold">Fastest Find</p>
               <p className="text-sm font-bold text-yellow-300">{recap.fastestFind.word}</p>
               <p className="text-xs text-gray-400">
-                {formatTime(recap.fastestFind.foundAtMs)} — {recap.fastestFind.foundBy === playerId ? me?.name : opponent?.name}
+                {formatTime(recap.fastestFind.foundAtMs)} —{' '}
+                {recap.fastestFind.foundBy === playerId ? me?.name : opponent?.name}
               </p>
             </div>
           )}
           <div className="flex-1 bg-purple-900/30 border border-purple-700/50 rounded-lg p-2 text-center">
             <p className="text-[10px] text-purple-500 uppercase font-bold">Powerups Used</p>
             <div className="flex justify-center gap-3 mt-1">
-              <span className="text-sm font-bold text-blue-400">{recap.powerupsUsed[playerId] || 0}</span>
+              <span className="text-sm font-bold text-blue-400">
+                {recap.powerupsUsed[playerId] || 0}
+              </span>
               <span className="text-gray-600">vs</span>
-              <span className="text-sm font-bold text-orange-400">{opponent ? recap.powerupsUsed[opponent.id] || 0 : 0}</span>
+              <span className="text-sm font-bold text-orange-400">
+                {opponent ? recap.powerupsUsed[opponent.id] || 0 : 0}
+              </span>
             </div>
           </div>
           <div className="flex-1 bg-gray-800 border border-gray-700/50 rounded-lg p-2 text-center">
@@ -171,7 +204,13 @@ export default function ResultsScreen() {
                     {w.foundAtMs != null && (
                       <span className="text-xs text-gray-500">{formatTime(w.foundAtMs)}</span>
                     )}
-                    <span className={isMe ? 'text-blue-400 text-xs font-bold' : 'text-orange-400 text-xs font-bold'}>
+                    <span
+                      className={
+                        isMe
+                          ? 'text-blue-400 text-xs font-bold'
+                          : 'text-orange-400 text-xs font-bold'
+                      }
+                    >
                       {isMe ? me?.name : opponent?.name}
                     </span>
                   </div>

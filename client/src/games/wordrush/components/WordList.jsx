@@ -8,7 +8,10 @@ export default function WordList() {
     return (
       <div className="relative grid grid-cols-3 gap-1 px-2 mt-2">
         {words.map((w) => (
-          <div key={w.word} className="text-xs py-1 px-2 rounded text-center font-semibold bg-gray-800 text-gray-800">
+          <div
+            key={w.word}
+            className="text-xs py-1 px-2 rounded text-center font-semibold bg-gray-800 text-gray-800"
+          >
             {'?????'}
           </div>
         ))}

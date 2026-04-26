@@ -28,21 +28,55 @@ export default function useSocket() {
     });
 
     socket.on('room:created', (data) => {
-      dispatch({ type: 'SET_PLAYER_INFO', playerName: data.players.find(p => p.id === data.playerId)?.name, playerId: data.playerId });
-      dispatch({ type: 'ROOM_CREATED', roomCode: data.roomCode, players: data.players, hostId: data.hostId, totalRounds: data.totalRounds, roundTimeSeconds: data.roundTimeSeconds });
+      dispatch({
+        type: 'SET_PLAYER_INFO',
+        playerName: data.players.find((p) => p.id === data.playerId)?.name,
+        playerId: data.playerId,
+      });
+      dispatch({
+        type: 'ROOM_CREATED',
+        roomCode: data.roomCode,
+        players: data.players,
+        hostId: data.hostId,
+        totalRounds: data.totalRounds,
+        roundTimeSeconds: data.roundTimeSeconds,
+      });
       sessionStorage.setItem('wordclash_room', data.roomCode);
-      sessionStorage.setItem('wordclash_name', data.players.find(p => p.id === data.playerId)?.name || '');
+      sessionStorage.setItem(
+        'wordclash_name',
+        data.players.find((p) => p.id === data.playerId)?.name || ''
+      );
     });
 
     socket.on('room:joined', (data) => {
-      dispatch({ type: 'SET_PLAYER_INFO', playerName: data.players.find(p => p.id === data.playerId)?.name, playerId: data.playerId });
-      dispatch({ type: 'ROOM_JOINED', roomCode: data.roomCode, players: data.players, hostId: data.hostId, totalRounds: data.totalRounds, roundTimeSeconds: data.roundTimeSeconds });
+      dispatch({
+        type: 'SET_PLAYER_INFO',
+        playerName: data.players.find((p) => p.id === data.playerId)?.name,
+        playerId: data.playerId,
+      });
+      dispatch({
+        type: 'ROOM_JOINED',
+        roomCode: data.roomCode,
+        players: data.players,
+        hostId: data.hostId,
+        totalRounds: data.totalRounds,
+        roundTimeSeconds: data.roundTimeSeconds,
+      });
       sessionStorage.setItem('wordclash_room', data.roomCode);
-      sessionStorage.setItem('wordclash_name', data.players.find(p => p.id === data.playerId)?.name || '');
+      sessionStorage.setItem(
+        'wordclash_name',
+        data.players.find((p) => p.id === data.playerId)?.name || ''
+      );
     });
 
     socket.on('room:update', (data) => {
-      dispatch({ type: 'ROOM_UPDATE', players: data.players, hostId: data.hostId, totalRounds: data.totalRounds, roundTimeSeconds: data.roundTimeSeconds });
+      dispatch({
+        type: 'ROOM_UPDATE',
+        players: data.players,
+        hostId: data.hostId,
+        totalRounds: data.totalRounds,
+        roundTimeSeconds: data.roundTimeSeconds,
+      });
     });
 
     socket.on('room:error', (data) => {
@@ -51,12 +85,23 @@ export default function useSocket() {
     });
 
     socket.on('round:start', (data) => {
-      dispatch({ type: 'ROUND_START', letters: data.letters, round: data.round, totalRounds: data.totalRounds, roundTimeSeconds: data.roundTimeSeconds });
+      dispatch({
+        type: 'ROUND_START',
+        letters: data.letters,
+        round: data.round,
+        totalRounds: data.totalRounds,
+        roundTimeSeconds: data.roundTimeSeconds,
+      });
       playRoundStart();
     });
 
     socket.on('word:validation', (data) => {
-      dispatch({ type: 'WORD_VALIDATION', word: data.word, valid: data.valid, reason: data.reason });
+      dispatch({
+        type: 'WORD_VALIDATION',
+        word: data.word,
+        valid: data.valid,
+        reason: data.reason,
+      });
     });
 
     socket.on('player:submitted', (data) => {
@@ -64,7 +109,14 @@ export default function useSocket() {
     });
 
     socket.on('round:end', (data) => {
-      dispatch({ type: 'ROUND_END', submissions: data.submissions, scores: data.scores, round: data.round, bestWords: data.bestWords, isLastRound: data.isLastRound });
+      dispatch({
+        type: 'ROUND_END',
+        submissions: data.submissions,
+        scores: data.scores,
+        round: data.round,
+        bestWords: data.bestWords,
+        isLastRound: data.isLastRound,
+      });
     });
 
     socket.on('round:readyVote', (data) => {
@@ -72,7 +124,12 @@ export default function useSocket() {
     });
 
     socket.on('game:end', (data) => {
-      dispatch({ type: 'GAME_END', winner: data.winner, scores: data.scores, players: data.players });
+      dispatch({
+        type: 'GAME_END',
+        winner: data.winner,
+        scores: data.scores,
+        players: data.players,
+      });
       if (data.winner?.id === socket.id) {
         playGameWin();
       } else if (data.winner) {

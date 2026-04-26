@@ -9,14 +9,26 @@ export default function HomeScreen() {
   const [error, setError] = useState('');
 
   const handleCreate = () => {
-    if (!name.trim()) { setError('Enter your name'); return; }
+    if (!name.trim()) {
+      setError('Enter your name');
+      return;
+    }
     getSocket().emit('room:create', { playerName: name.trim() });
   };
 
   const handleJoin = () => {
-    if (!name.trim()) { setError('Enter your name'); return; }
-    if (!roomCode.trim()) { setError('Enter room code'); return; }
-    getSocket().emit('room:join', { roomCode: roomCode.trim().toUpperCase(), playerName: name.trim() });
+    if (!name.trim()) {
+      setError('Enter your name');
+      return;
+    }
+    if (!roomCode.trim()) {
+      setError('Enter room code');
+      return;
+    }
+    getSocket().emit('room:join', {
+      roomCode: roomCode.trim().toUpperCase(),
+      playerName: name.trim(),
+    });
   };
 
   return (
@@ -25,7 +37,9 @@ export default function HomeScreen() {
         WordClash
       </h1>
       <p className="text-gray-400 mb-2">Form words, outscore opponents</p>
-      <Link to="/" className="text-gray-500 hover:text-gray-300 text-sm mb-6 transition">Back to Games</Link>
+      <Link to="/" className="text-gray-500 hover:text-gray-300 text-sm mb-6 transition">
+        Back to Games
+      </Link>
 
       {!mode && (
         <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -50,7 +64,10 @@ export default function HomeScreen() {
             type="text"
             placeholder="Your name"
             value={name}
-            onChange={(e) => { setName(e.target.value); setError(''); }}
+            onChange={(e) => {
+              setName(e.target.value);
+              setError('');
+            }}
             maxLength={15}
             className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500"
           />
@@ -60,7 +77,10 @@ export default function HomeScreen() {
               type="text"
               placeholder="Room code"
               value={roomCode}
-              onChange={(e) => { setRoomCode(e.target.value.toUpperCase()); setError(''); }}
+              onChange={(e) => {
+                setRoomCode(e.target.value.toUpperCase());
+                setError('');
+              }}
               maxLength={6}
               className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 uppercase tracking-widest focus:outline-none focus:border-orange-500"
             />
@@ -75,7 +95,10 @@ export default function HomeScreen() {
             {mode === 'create' ? 'Create' : 'Join'}
           </button>
           <button
-            onClick={() => { setMode(null); setError(''); }}
+            onClick={() => {
+              setMode(null);
+              setError('');
+            }}
             className="text-gray-400 hover:text-white text-sm transition"
           >
             Back
