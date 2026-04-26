@@ -4,24 +4,22 @@ import { getSocket } from '../lib/socket.js';
 import { POWERUP_CONFIG } from '../lib/constants.js';
 import { playPowerupUse } from '../../../lib/sounds.js';
 
-const SPIN_DURATION = 1500; // ms to spin before revealing choices
-const AUTO_PICK_DELAY = 5000; // auto-pick after 5s of showing choices
+const SPIN_DURATION = 1000;
+const AUTO_PICK_DELAY = 5000;
 
 export default function PowerupRoulette() {
   const { state, dispatch } = useGame();
   const { powerupChoices } = state;
-  const [phase, setPhase] = useState('idle'); // idle | spinning | choosing
+  const [phase, setPhase] = useState('idle');
   const [spinIndex, setSpinIndex] = useState(0);
   const autoPickRef = useRef(null);
   const spinRef = useRef(null);
 
-  // Start spin when choices arrive
   useEffect(() => {
     if (powerupChoices && powerupChoices.length > 0 && phase === 'idle') {
       setPhase('spinning');
       playPowerupUse();
 
-      // Spin animation — cycle through all powerup emojis quickly
       let i = 0;
       const interval = setInterval(() => {
         i++;
@@ -29,7 +27,6 @@ export default function PowerupRoulette() {
       }, 60);
       spinRef.current = interval;
 
-      // After spin duration, reveal choices
       setTimeout(() => {
         clearInterval(interval);
         spinRef.current = null;
@@ -38,7 +35,6 @@ export default function PowerupRoulette() {
     }
   }, [powerupChoices, phase]);
 
-  // Auto-pick timeout when choosing
   useEffect(() => {
     if (phase === 'choosing' && powerupChoices) {
       autoPickRef.current = setTimeout(() => {
@@ -51,7 +47,6 @@ export default function PowerupRoulette() {
     }
   }, [phase, powerupChoices]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (spinRef.current) clearInterval(spinRef.current);
@@ -80,41 +75,36 @@ export default function PowerupRoulette() {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm w-full mx-4 text-center">
+    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+      <div className="pointer-events-auto w-full max-w-sm mx-4 mb-4 bg-gray-900/95 backdrop-blur border border-gray-700 rounded-2xl px-4 py-3 shadow-xl animate-fade-in">
         {phase === 'spinning' && (
-          <>
-            <p className="text-gray-400 text-sm mb-3">Powerup incoming...</p>
-            <div className="text-6xl mb-2 transition-all">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">
               {POWERUP_CONFIG[spinIndex % POWERUP_CONFIG.length].emoji}
-            </div>
-            <div className="text-lg font-bold text-white">
-              {POWERUP_CONFIG[spinIndex % POWERUP_CONFIG.length].label}
-            </div>
-          </>
+            </span>
+            <span className="text-gray-400 text-sm font-medium">Powerup incoming…</span>
+          </div>
         )}
 
         {phase === 'choosing' && (
           <>
-            <p className="text-gray-400 text-sm mb-4">Pick your powerup!</p>
-            <div className="flex gap-3 justify-center">
+            <p className="text-gray-400 text-xs font-medium mb-2">Pick your powerup</p>
+            <div className="flex gap-2">
               {choiceConfigs.map(({ type, label, emoji, bg, hover }) => (
                 <button
                   key={type}
                   onClick={() => handlePick(type)}
-                  className={`${bg} ${hover} flex flex-col items-center gap-2 px-4 py-4 rounded-xl transition transform hover:scale-105 active:scale-95 min-w-[80px]`}
+                  className={`${bg} ${hover} flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl transition transform hover:scale-105 active:scale-95`}
                 >
-                  <span className="text-3xl">{emoji}</span>
-                  <span className="text-white text-sm font-bold">{label}</span>
+                  <span className="text-2xl">{emoji}</span>
+                  <span className="text-white text-xs font-bold leading-tight">{label}</span>
                 </button>
               ))}
             </div>
-            <div className="mt-3 w-full h-1 bg-gray-700 rounded-full overflow-hidden">
+            <div className="mt-2 w-full h-0.5 bg-gray-700 rounded-full overflow-hidden">
               <div
                 className="h-full bg-yellow-500 rounded-full"
-                style={{
-                  animation: `timer-shrink ${AUTO_PICK_DELAY}ms linear forwards`,
-                }}
+                style={{ animation: `timer-shrink ${AUTO_PICK_DELAY}ms linear forwards` }}
               />
             </div>
           </>

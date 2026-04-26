@@ -30,8 +30,6 @@ const initialState = {
   seriesOver: false,
   seriesWinner: null,
   multiplier: 1,
-  finalCountdown: null,
-  finalCountdownPoints: null,
   recap: null,
   powerupChoices: null,
   rematchVotes: [],
@@ -202,9 +200,6 @@ function gameReducer(state, action) {
     case 'MULTIPLIER_UPDATE':
       return { ...state, multiplier: action.multiplier };
 
-    case 'FINAL_COUNTDOWN':
-      return { ...state, finalCountdown: action.seconds, finalCountdownPoints: action.points };
-
     case 'GAME_END':
       return {
         ...state,
@@ -264,8 +259,6 @@ function gameReducer(state, action) {
         blinded: false,
         winner: null,
         multiplier: 1,
-        finalCountdown: null,
-        finalCountdownPoints: null,
         recap: null,
         powerupChoices: null,
         rematchVotes: [],

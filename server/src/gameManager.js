@@ -102,7 +102,3 @@ export function getCurrentMultiplier(room, offset = 0) {
   }
   return multiplier;
 }
-
-export function isLastWord(room) {
-  return room.game.words.filter((w) => !w.found).length === 1;
-}

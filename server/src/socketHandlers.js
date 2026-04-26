@@ -10,15 +10,9 @@ import {
   resetRoomToLobby,
   getRoom,
 } from './roomManager.js';
-import {
-  startGame,
-  validateWordFound,
-  checkGameEnd,
-  getCurrentMultiplier,
-  isLastWord,
-} from './gameManager.js';
+import { startGame, validateWordFound, checkGameEnd, getCurrentMultiplier } from './gameManager.js';
 import { earnPowerup, usePowerup, checkShield, confirmPowerupChoice } from './powerupManager.js';
-import { COUNTDOWN_SECONDS, DISCONNECT_TIMEOUT, FINAL_COUNTDOWN_TIERS } from './constants.js';
+import { COUNTDOWN_SECONDS, DISCONNECT_TIMEOUT } from './constants.js';
 
 const disconnectTimers = new Map();
 
@@ -142,11 +136,7 @@ export function registerSocketHandlers(io, socket) {
       const pState = room.game.powerups[socket.id];
       const bonusMultiplier = pState && pState.bonusActive ? 2 : 1;
 
-      // Use final countdown points if active, otherwise use escalation tier
-      // offset -1 because this word was already marked found by validateWordFound
-      const basePoints = room.game.finalCountdown
-        ? room.game.finalCountdownPoints
-        : getCurrentMultiplier(room, -1);
+      const basePoints = getCurrentMultiplier(room, -1);
 
       player.score += basePoints * bonusMultiplier;
       if (pState && pState.bonusActive) {
@@ -181,49 +171,8 @@ export function registerSocketHandlers(io, socket) {
     const newMultiplier = getCurrentMultiplier(room);
     io.to(room.code).emit('game:multiplierUpdate', { multiplier: newMultiplier });
 
-    // Start final countdown if last word remains and not already running
-    if (isLastWord(room) && !room.game.finalCountdown) {
-      room.game.finalCountdown = true;
-      room.game.finalCountdownPoints = FINAL_COUNTDOWN_TIERS[0].points;
-
-      let elapsed = 0;
-      io.to(room.code).emit('game:finalCountdown', {
-        seconds: FINAL_COUNTDOWN_TIERS[0].seconds,
-        points: FINAL_COUNTDOWN_TIERS[0].points,
-      });
-
-      room.game.finalCountdownInterval = setInterval(() => {
-        elapsed++;
-        const remaining = FINAL_COUNTDOWN_TIERS[0].seconds - elapsed;
-
-        // Check tier boundaries and update points
-        for (let i = FINAL_COUNTDOWN_TIERS.length - 1; i >= 0; i--) {
-          if (remaining <= FINAL_COUNTDOWN_TIERS[i].seconds) {
-            room.game.finalCountdownPoints = FINAL_COUNTDOWN_TIERS[i].points;
-            break;
-          }
-        }
-
-        io.to(room.code).emit('game:finalCountdown', {
-          seconds: Math.max(0, remaining),
-          points: room.game.finalCountdownPoints,
-        });
-
-        // Stop interval once fully elapsed
-        if (remaining <= 0) {
-          clearInterval(room.game.finalCountdownInterval);
-          room.game.finalCountdownInterval = null;
-          room.game.finalCountdownPoints = 1;
-        }
-      }, 1000);
-    }
-
     // Check game end
     if (checkGameEnd(room)) {
-      if (room.game.finalCountdownInterval) {
-        clearInterval(room.game.finalCountdownInterval);
-        room.game.finalCountdownInterval = null;
-      }
       room.phase = 'results';
       const scores = scoresPayload(room);
       const sortedPlayers = [...room.players].sort((a, b) => b.score - a.score);
@@ -406,9 +355,6 @@ export function registerSocketHandlers(io, socket) {
 
     if (room.playAgainVotes.size >= 2) {
       room.playAgainVotes = null;
-      if (room.game && room.game.finalCountdownInterval) {
-        clearInterval(room.game.finalCountdownInterval);
-      }
       resetRoomToLobby(room);
       io.to(room.code).emit('room:update', { players: playersPayload(room) });
       io.to(room.code).emit('game:state', {

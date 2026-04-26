@@ -195,10 +195,6 @@ export default function useSocket() {
       dispatch({ type: 'REMATCH_START', players: data.players, seriesLength: data.seriesLength });
     });
 
-    socket.on('game:finalCountdown', (data) => {
-      dispatch({ type: 'FINAL_COUNTDOWN', seconds: data.seconds, points: data.points });
-    });
-
     socket.on('game:end', (data) => {
       dispatch({
         type: 'GAME_END',
@@ -259,7 +255,6 @@ export default function useSocket() {
       socket.off('room:playAgainVote');
       socket.off('room:rematchStart');
       socket.off('game:multiplierUpdate');
-      socket.off('game:finalCountdown');
       socket.off('game:end');
       socket.off('game:state');
       socket.off('player:disconnected');

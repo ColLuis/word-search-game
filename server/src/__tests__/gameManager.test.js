@@ -4,7 +4,6 @@ import {
   validateWordFound,
   checkGameEnd,
   getCurrentMultiplier,
-  isLastWord,
 } from '../gameManager.js';
 import { WORDS_PER_GAME } from '../constants.js';
 
@@ -95,22 +94,6 @@ describe('getCurrentMultiplier', () => {
     startGame(room);
     for (let i = 0; i < 9; i++) room.game.words[i].found = true;
     expect(getCurrentMultiplier(room)).toBe(3);
-  });
-});
-
-describe('isLastWord', () => {
-  it('detects when 1 word remains', () => {
-    const room = makeRoom();
-    startGame(room);
-    const words = room.game.words;
-    for (let i = 0; i < words.length - 1; i++) words[i].found = true;
-    expect(isLastWord(room)).toBe(true);
-  });
-
-  it('returns false when multiple words remain', () => {
-    const room = makeRoom();
-    startGame(room);
-    expect(isLastWord(room)).toBe(false);
   });
 });
 
