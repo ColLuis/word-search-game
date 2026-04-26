@@ -20,9 +20,7 @@ describe('shuffle', () => {
     const input = Array.from({ length: 20 }, (_, i) => i);
     // Run multiple times — at least one should differ from the original
     const results = Array.from({ length: 5 }, () => shuffle(input));
-    const anyDifferent = results.some(
-      (r) => r.join(',') !== input.join(',')
-    );
+    const anyDifferent = results.some((r) => r.join(',') !== input.join(','));
     expect(anyDifferent).toBe(true);
   });
 });

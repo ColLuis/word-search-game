@@ -43,9 +43,7 @@ export default function WordBuilder({ tiles, onTileClick, validationStatus, curr
           <p className="text-gray-600 text-sm self-center">Tap letters to build a word</p>
         )}
       </div>
-      <p className={`text-center text-sm mt-2 font-semibold ${statusColor}`}>
-        {statusText}
-      </p>
+      <p className={`text-center text-sm mt-2 font-semibold ${statusColor}`}>{statusText}</p>
     </div>
   );
 }

@@ -23,7 +23,9 @@ export default function PowerupBar() {
           className={`flex items-center gap-1 ${bg} ${hover} text-white text-sm px-3 py-1.5 rounded-lg transition`}
         >
           <span>{label}</span>
-          <span className={`${badge} ${badgeText} text-xs w-5 h-5 rounded-full flex items-center justify-center`}>
+          <span
+            className={`${badge} ${badgeText} text-xs w-5 h-5 rounded-full flex items-center justify-center`}
+          >
             {powerups[type]}
           </span>
         </button>

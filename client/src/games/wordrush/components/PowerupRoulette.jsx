@@ -69,7 +69,14 @@ export default function PowerupRoulette() {
   if (!powerupChoices || phase === 'idle') return null;
 
   const choiceConfigs = powerupChoices.map(
-    (type) => POWERUP_CONFIG.find((p) => p.type === type) || { type, label: type, emoji: '?', bg: 'bg-gray-700', hover: 'hover:bg-gray-600' }
+    (type) =>
+      POWERUP_CONFIG.find((p) => p.type === type) || {
+        type,
+        label: type,
+        emoji: '?',
+        bg: 'bg-gray-700',
+        hover: 'hover:bg-gray-600',
+      }
   );
 
   return (

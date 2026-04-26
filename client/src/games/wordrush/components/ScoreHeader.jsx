@@ -7,7 +7,8 @@ const MULTIPLIER_LABELS = {
 
 export default function ScoreHeader() {
   const { state } = useGame();
-  const { players, scores, playerId, multiplier, finalCountdown, finalCountdownPoints, words } = state;
+  const { players, scores, playerId, multiplier, finalCountdown, finalCountdownPoints, words } =
+    state;
 
   const me = players.find((p) => p.id === playerId);
   const opponent = players.find((p) => p.id !== playerId);
@@ -25,13 +26,15 @@ export default function ScoreHeader() {
 
   return (
     <div className="flex flex-col items-center mb-2 w-full gap-1">
-      <div className={`flex items-center justify-between px-4 py-2 rounded-lg w-full transition-all duration-300 ${
-        showCountdown
-          ? isCritical
-            ? 'bg-red-900/80 ring-1 ring-red-500/50'
-            : 'bg-yellow-900/60 ring-1 ring-yellow-500/30'
-          : 'bg-gray-800'
-      }`}>
+      <div
+        className={`flex items-center justify-between px-4 py-2 rounded-lg w-full transition-all duration-300 ${
+          showCountdown
+            ? isCritical
+              ? 'bg-red-900/80 ring-1 ring-red-500/50'
+              : 'bg-yellow-900/60 ring-1 ring-yellow-500/30'
+            : 'bg-gray-800'
+        }`}
+      >
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500" />
           <span className="font-semibold text-sm">{me?.name || 'You'}</span>
@@ -54,22 +57,28 @@ export default function ScoreHeader() {
       )}
 
       {showCountdown && (
-        <div className={`w-full rounded-lg px-3 py-2 ${
-          isLastPoint
-            ? 'bg-red-900/60 animate-urgency-critical'
-            : isCritical
-              ? 'bg-red-900/40 animate-urgency'
-              : 'bg-gradient-to-r from-yellow-900/50 to-orange-900/50 animate-urgency'
-        }`}>
+        <div
+          className={`w-full rounded-lg px-3 py-2 ${
+            isLastPoint
+              ? 'bg-red-900/60 animate-urgency-critical'
+              : isCritical
+                ? 'bg-red-900/40 animate-urgency'
+                : 'bg-gradient-to-r from-yellow-900/50 to-orange-900/50 animate-urgency'
+          }`}
+        >
           <div className="flex items-center justify-between mb-1">
-            <span className={`text-sm font-extrabold tracking-wide ${
-              isLastPoint ? 'text-red-400' : isCritical ? 'text-red-300' : 'text-yellow-300'
-            }`}>
+            <span
+              className={`text-sm font-extrabold tracking-wide ${
+                isLastPoint ? 'text-red-400' : isCritical ? 'text-red-300' : 'text-yellow-300'
+              }`}
+            >
               LAST WORD!
             </span>
-            <span className={`text-lg font-black tabular-nums ${
-              isLastPoint ? 'text-red-400' : isCritical ? 'text-orange-400' : 'text-green-400'
-            }`}>
+            <span
+              className={`text-lg font-black tabular-nums ${
+                isLastPoint ? 'text-red-400' : isCritical ? 'text-orange-400' : 'text-green-400'
+              }`}
+            >
               +{finalCountdownPoints}pt
             </span>
           </div>
@@ -84,12 +93,12 @@ export default function ScoreHeader() {
             />
           </div>
 
-          <p className={`text-xs font-bold mt-1 text-center ${
-            isLastPoint ? 'text-red-400' : isCritical ? 'text-orange-300' : 'text-yellow-200'
-          }`}>
-            {isLastPoint
-              ? 'Hurry — minimum points!'
-              : `${tierSeconds}s until points drop`}
+          <p
+            className={`text-xs font-bold mt-1 text-center ${
+              isLastPoint ? 'text-red-400' : isCritical ? 'text-orange-300' : 'text-yellow-200'
+            }`}
+          >
+            {isLastPoint ? 'Hurry — minimum points!' : `${tierSeconds}s until points drop`}
           </p>
         </div>
       )}

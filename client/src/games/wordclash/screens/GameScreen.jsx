@@ -12,15 +12,30 @@ import ReconnectBanner from '../components/ReconnectBanner.jsx';
 export default function GameScreen() {
   const { state } = useGame();
   const {
-    letters, currentRound, totalRounds, roundTimeSeconds,
-    players, playerId, submittedPlayerIds, iSubmitted,
-    validationStatus, scores, toast,
+    letters,
+    currentRound,
+    totalRounds,
+    roundTimeSeconds,
+    players,
+    playerId,
+    submittedPlayerIds,
+    iSubmitted,
+    validationStatus,
+    scores,
+    toast,
   } = state;
 
   const {
-    bankTiles, builderTiles, currentWord,
-    addToBuilder, returnToBank, clearBuilder, shuffleBank,
-    submitWord, submitEmpty, handleDragEnd,
+    bankTiles,
+    builderTiles,
+    currentWord,
+    addToBuilder,
+    returnToBank,
+    clearBuilder,
+    shuffleBank,
+    submitWord,
+    submitEmpty,
+    handleDragEnd,
   } = useWordBuilder(letters);
 
   const onTimerExpire = useCallback(() => {
@@ -112,7 +127,10 @@ export default function GameScreen() {
 
         {/* Action buttons */}
         {!iSubmitted ? (
-          <div className="flex gap-3 w-full" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <div
+            className="flex gap-3 w-full"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+          >
             <button
               onClick={clearBuilder}
               className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg transition"
@@ -138,8 +156,12 @@ export default function GameScreen() {
               } disabled:bg-gray-700 disabled:text-gray-500`}
             >
               {confirming
-                ? (currentWord.length === 0 ? 'Confirm Skip?' : 'Confirm?')
-                : (currentWord.length === 0 ? 'Skip' : 'Submit')}
+                ? currentWord.length === 0
+                  ? 'Confirm Skip?'
+                  : 'Confirm?'
+                : currentWord.length === 0
+                  ? 'Skip'
+                  : 'Submit'}
             </button>
           </div>
         ) : (

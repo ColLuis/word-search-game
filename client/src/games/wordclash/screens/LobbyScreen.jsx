@@ -54,11 +54,11 @@ export default function LobbyScreen() {
             </div>
             <span className="font-semibold flex-1">{p.name}</span>
             {p.id === hostId && (
-              <span className="text-xs text-orange-400 bg-orange-400/20 px-2 py-0.5 rounded-full">Host</span>
+              <span className="text-xs text-orange-400 bg-orange-400/20 px-2 py-0.5 rounded-full">
+                Host
+              </span>
             )}
-            {p.id === playerId && (
-              <span className="text-xs text-gray-500">You</span>
-            )}
+            {p.id === playerId && <span className="text-xs text-gray-500">You</span>}
           </div>
         ))}
         {players.length < 4 && (
@@ -118,9 +118,7 @@ export default function LobbyScreen() {
         </div>
       )}
 
-      {!isHost && (
-        <p className="text-gray-500 text-sm">Waiting for host to start...</p>
-      )}
+      {!isHost && <p className="text-gray-500 text-sm">Waiting for host to start...</p>}
 
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg">

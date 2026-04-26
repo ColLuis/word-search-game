@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Author:** Luis  
-**Status:** Draft  
+**Status:** Draft
 
 ---
 
@@ -35,14 +35,14 @@ The game is browser-based, mobile-first, and requires no app installation. Playe
 
 ## 4. Tech Stack Recommendation
 
-| Layer | Technology | Rationale |
-|---|---|---|
-| Frontend | React + Vite | Fast dev experience, component-based UI |
-| Styling | Tailwind CSS | Mobile-first utility classes |
-| Real-time | Socket.io (WebSockets) | Reliable bidirectional state sync |
-| Backend | Node.js + Express | Lightweight, pairs naturally with Socket.io |
-| Deployment | Railway or Render | Free tier, supports WebSocket servers |
-| Word lists | Curated JSON files per category | No external API dependency |
+| Layer      | Technology                      | Rationale                                   |
+| ---------- | ------------------------------- | ------------------------------------------- |
+| Frontend   | React + Vite                    | Fast dev experience, component-based UI     |
+| Styling    | Tailwind CSS                    | Mobile-first utility classes                |
+| Real-time  | Socket.io (WebSockets)          | Reliable bidirectional state sync           |
+| Backend    | Node.js + Express               | Lightweight, pairs naturally with Socket.io |
+| Deployment | Railway or Render               | Free tier, supports WebSocket servers       |
+| Word lists | Curated JSON files per category | No external API dependency                  |
 
 No database is needed — all game state is held in-memory on the server per session and discarded after the match ends.
 
@@ -93,6 +93,7 @@ No database is needed — all game state is held in-memory on the server per ses
 Each category contains 20–30 curated words. Each match randomly selects 12 words from the chosen category. Words are between 4–10 characters.
 
 **Initial categories:**
+
 - Animals (e.g. TIGER, DOLPHIN, PENGUIN)
 - Food (e.g. PIZZA, MANGO, NOODLE)
 - Travel (e.g. PASSPORT, HOTEL, AIRPORT)
@@ -127,12 +128,14 @@ Players earn powerups by finding words. Each powerup can be held and activated a
 ### 7.2 Available Powerups
 
 #### Freeze (⏸)
+
 - **Effect:** The opponent's grid becomes non-interactive for **5 seconds** — they can see the grid but cannot make selections
 - **Visual:** Opponent's grid overlaid with an ice/blue tinted freeze effect; a countdown timer appears for both players
 - **Cooldown:** Cannot be frozen again for 10 seconds after the freeze wears off (to prevent stacking)
 - **Edge case:** If the opponent is mid-drag when freeze activates, their current selection is cancelled
 
 #### Hint (💡)
+
 - **Effect:** One un-found word on the grid is briefly highlighted for the activating player only — a yellow glow traces the word's path for **3 seconds**
 - The hint is chosen randomly from the remaining unfound words
 - **Edge case:** If only 1 word remains and the opponent is clearly about to find it, the hint still targets that last word
@@ -153,17 +156,17 @@ All game state is authoritative on the server. Clients send events; the server v
 
 ### 8.1 Key Events
 
-| Event | Direction | Payload |
-|---|---|---|
-| `player:join` | Client → Server | `{ roomCode, playerName }` |
-| `player:ready` | Client → Server | `{}` |
-| `game:start` | Server → Both | `{ grid, wordList, seed }` |
-| `word:found` | Client → Server | `{ word, startCell, endCell, playerId }` |
-| `word:confirmed` | Server → Both | `{ word, playerId, score }` |
-| `powerup:activate` | Client → Server | `{ type, playerId }` |
-| `powerup:effect` | Server → Both | `{ type, targetPlayerId, duration }` |
-| `powerup:earned` | Server → Client | `{ type, playerId }` |
-| `game:end` | Server → Both | `{ scores, winner }` |
+| Event              | Direction       | Payload                                  |
+| ------------------ | --------------- | ---------------------------------------- |
+| `player:join`      | Client → Server | `{ roomCode, playerName }`               |
+| `player:ready`     | Client → Server | `{}`                                     |
+| `game:start`       | Server → Both   | `{ grid, wordList, seed }`               |
+| `word:found`       | Client → Server | `{ word, startCell, endCell, playerId }` |
+| `word:confirmed`   | Server → Both   | `{ word, playerId, score }`              |
+| `powerup:activate` | Client → Server | `{ type, playerId }`                     |
+| `powerup:effect`   | Server → Both   | `{ type, targetPlayerId, duration }`     |
+| `powerup:earned`   | Server → Client | `{ type, playerId }`                     |
+| `game:end`         | Server → Both   | `{ scores, winner }`                     |
 
 ### 8.2 Conflict Handling
 
@@ -204,13 +207,13 @@ All game state is authoritative on the server. Clients send events; the server v
 
 ### 9.2 Screens
 
-| Screen | Description |
-|---|---|
-| Home | App logo, "Create Room" button, "Join Room" input |
-| Lobby | Room code display, shareable link, player names, Ready button |
-| Countdown | 3-2-1 overlay before game starts |
-| Game | Main gameplay screen |
-| Results | Winner banner, word tally breakdown, Play Again button |
+| Screen    | Description                                                   |
+| --------- | ------------------------------------------------------------- |
+| Home      | App logo, "Create Room" button, "Join Room" input             |
+| Lobby     | Room code display, shareable link, player names, Ready button |
+| Countdown | 3-2-1 overlay before game starts                              |
+| Game      | Main gameplay screen                                          |
+| Results   | Winner banner, word tally breakdown, Play Again button        |
 
 ### 9.3 Animations & Feedback
 
@@ -224,17 +227,17 @@ All game state is authoritative on the server. Clients send events; the server v
 
 ## 10. Edge Cases & Rules
 
-| Scenario | Behaviour |
-|---|---|
-| Both players find the word at the exact same ms | Server's arrival order decides; loser gets "Taken!" flash |
-| Player uses Hint on the last word | Hint highlights that word for 3 seconds as normal |
-| Player earns a powerup when already at max (2) | New powerup is discarded; player sees "Powerup lost — full!" warning |
-| Freeze is used when opponent is already frozen | The freeze timer resets to 5 seconds (does not stack duration) |
-| All words found before anyone uses their powerup | Unused powerups are discarded; results screen shows immediately |
-| Player tries to select a diagonal path on a non-diagonal word | Selection is invalid; red flash |
+| Scenario                                                      | Behaviour                                                                                                  |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Both players find the word at the exact same ms               | Server's arrival order decides; loser gets "Taken!" flash                                                  |
+| Player uses Hint on the last word                             | Hint highlights that word for 3 seconds as normal                                                          |
+| Player earns a powerup when already at max (2)                | New powerup is discarded; player sees "Powerup lost — full!" warning                                       |
+| Freeze is used when opponent is already frozen                | The freeze timer resets to 5 seconds (does not stack duration)                                             |
+| All words found before anyone uses their powerup              | Unused powerups are discarded; results screen shows immediately                                            |
+| Player tries to select a diagonal path on a non-diagonal word | Selection is invalid; red flash                                                                            |
 | Player leaves the results screen before both click Play Again | That player's intent to replay is lost; the other player sees "Waiting for opponent..." with a 60s timeout |
-| Room code entered incorrectly | "Room not found" error with a prompt to double-check the code |
-| Room is full (2/2 players already) | Third visitor sees "This room is full" and is redirected to home |
+| Room code entered incorrectly                                 | "Room not found" error with a prompt to double-check the code                                              |
+| Room is full (2/2 players already)                            | Third visitor sees "This room is full" and is redirected to home                                           |
 
 ---
 
@@ -273,4 +276,4 @@ The MVP is considered successful when:
 
 ---
 
-*End of PRD*
+_End of PRD_

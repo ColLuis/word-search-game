@@ -26,13 +26,20 @@ export default function LobbyScreen() {
         {seriesLength > 1 ? `Best of ${seriesLength}` : 'Single Game'}
       </p>
 
-      {seriesLength > 1 && me && opponent && (seriesWins[me.id] > 0 || seriesWins[opponent.id] > 0) && (
-        <div className="flex gap-4 mb-4 text-sm">
-          <span className="text-blue-400">{me.name}: {seriesWins[me.id] || 0}</span>
-          <span className="text-gray-500">-</span>
-          <span className="text-orange-400">{opponent.name}: {seriesWins[opponent.id] || 0}</span>
-        </div>
-      )}
+      {seriesLength > 1 &&
+        me &&
+        opponent &&
+        (seriesWins[me.id] > 0 || seriesWins[opponent.id] > 0) && (
+          <div className="flex gap-4 mb-4 text-sm">
+            <span className="text-blue-400">
+              {me.name}: {seriesWins[me.id] || 0}
+            </span>
+            <span className="text-gray-500">-</span>
+            <span className="text-orange-400">
+              {opponent.name}: {seriesWins[opponent.id] || 0}
+            </span>
+          </div>
+        )}
 
       <div className="flex items-center gap-2 mb-6">
         <span className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-2xl font-mono tracking-[0.3em]">
@@ -80,9 +87,7 @@ function PlayerSlot({ player, label }) {
         <span className="text-xs text-gray-500 uppercase">{label}</span>
         <p className="font-semibold">{player?.name || '---'}</p>
       </div>
-      {player?.ready && (
-        <span className="bg-green-600 text-xs px-2 py-1 rounded-full">Ready</span>
-      )}
+      {player?.ready && <span className="bg-green-600 text-xs px-2 py-1 rounded-full">Ready</span>}
     </div>
   );
 }

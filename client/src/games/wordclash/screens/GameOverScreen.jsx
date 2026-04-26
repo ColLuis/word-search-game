@@ -33,11 +33,7 @@ export default function GameOverScreen() {
         {tie ? 'Tie Game!' : iWon ? 'You Win!' : 'Game Over!'}
       </h2>
       <p className="text-gray-400 mb-6">
-        {tie
-          ? 'Evenly matched!'
-          : iWon
-            ? 'Great word building!'
-            : `${winner.name} wins!`}
+        {tie ? 'Evenly matched!' : iWon ? 'Great word building!' : `${winner.name} wins!`}
       </p>
 
       {/* Winner highlight */}
@@ -55,7 +51,9 @@ export default function GameOverScreen() {
                   {winnerPlayer.name[0].toUpperCase()}
                 </div>
                 <span className="font-bold text-lg">{winnerPlayer.name}</span>
-                <span className="text-2xl font-bold text-yellow-400">{scores[winner.id] || 0} pts</span>
+                <span className="text-2xl font-bold text-yellow-400">
+                  {scores[winner.id] || 0} pts
+                </span>
               </div>
             );
           })()}

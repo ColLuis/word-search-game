@@ -2,11 +2,11 @@ import { GRID_SIZE } from './constants.js';
 import { shuffle } from './utils.js';
 
 const DIRECTIONS = [
-  { dr: 0, dc: 1 },   // horizontal right
-  { dr: 1, dc: 0 },   // vertical down
-  { dr: 1, dc: 1 },   // diagonal down-right
-  { dr: 0, dc: -1 },  // horizontal left (reverse)
-  { dr: -1, dc: 0 },  // vertical up (reverse)
+  { dr: 0, dc: 1 }, // horizontal right
+  { dr: 1, dc: 0 }, // vertical down
+  { dr: 1, dc: 1 }, // diagonal down-right
+  { dr: 0, dc: -1 }, // horizontal left (reverse)
+  { dr: -1, dc: 0 }, // vertical up (reverse)
   { dr: -1, dc: -1 }, // diagonal up-left (reverse)
 ];
 

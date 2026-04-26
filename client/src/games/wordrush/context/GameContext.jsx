@@ -3,15 +3,15 @@ import { createContext, useContext, useReducer } from 'react';
 const GameContext = createContext(null);
 
 const initialState = {
-  phase: 'home',        // home | lobby | countdown | playing | results
+  phase: 'home', // home | lobby | countdown | playing | results
   roomCode: null,
   playerName: null,
-  playerId: null,        // socket id
-  players: [],           // [{ id, name, ready, score }]
+  playerId: null, // socket id
+  players: [], // [{ id, name, ready, score }]
   category: null,
   grid: [],
-  words: [],             // [{ word, found, foundBy, cells }]
-  scores: {},            // { playerId: score }
+  words: [], // [{ word, found, foundBy, cells }]
+  scores: {}, // { playerId: score }
   powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
   frozen: false,
   hintCells: [],
@@ -68,7 +68,16 @@ function gameReducer(state, action) {
         words: action.words,
         scores: action.scores,
         countdown: null,
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
+        powerups: {
+          freeze: 0,
+          hint: 0,
+          fog: 0,
+          bonus: 0,
+          drain: 0,
+          rotate: 0,
+          shield: 0,
+          blind: 0,
+        },
         frozen: false,
         hintCells: [],
         hintWord: null,
@@ -90,7 +99,9 @@ function gameReducer(state, action) {
 
     case 'WORD_CONFIRMED': {
       const words = state.words.map((w) =>
-        w.word === action.word ? { ...w, found: true, foundBy: action.foundBy, cells: action.cells || w.cells } : w
+        w.word === action.word
+          ? { ...w, found: true, foundBy: action.foundBy, cells: action.cells || w.cells }
+          : w
       );
       return { ...state, words, scores: action.scores };
     }
@@ -162,13 +173,28 @@ function gameReducer(state, action) {
       return {
         ...state,
         phase: 'lobby',
-        grid: [], words: [], scores: {}, winner: null,
-        seriesOver: false, seriesWinner: null, seriesWins: {},
+        grid: [],
+        words: [],
+        scores: {},
+        winner: null,
+        seriesOver: false,
+        seriesWinner: null,
+        seriesWins: {},
         rematchVotes: [],
         recap: null,
         powerupChoices: null,
-        shielded: false, blinded: false,
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
+        shielded: false,
+        blinded: false,
+        powerups: {
+          freeze: 0,
+          hint: 0,
+          fog: 0,
+          bonus: 0,
+          drain: 0,
+          rotate: 0,
+          shield: 0,
+          blind: 0,
+        },
         players: action.players,
         seriesLength: action.seriesLength,
       };
@@ -218,7 +244,16 @@ function gameReducer(state, action) {
         grid: [],
         words: [],
         scores: {},
-        powerups: { freeze: 0, hint: 0, fog: 0, bonus: 0, drain: 0, rotate: 0, shield: 0, blind: 0 },
+        powerups: {
+          freeze: 0,
+          hint: 0,
+          fog: 0,
+          bonus: 0,
+          drain: 0,
+          rotate: 0,
+          shield: 0,
+          blind: 0,
+        },
         frozen: false,
         hintCells: [],
         hintWord: null,
@@ -227,7 +262,7 @@ function gameReducer(state, action) {
         bonusActive: false,
         shielded: false,
         blinded: false,
-              winner: null,
+        winner: null,
         multiplier: 1,
         finalCountdown: null,
         finalCountdownPoints: null,
@@ -247,11 +282,7 @@ function gameReducer(state, action) {
 
 export function GameProvider({ children }) {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-  return (
-    <GameContext.Provider value={{ state, dispatch }}>
-      {children}
-    </GameContext.Provider>
-  );
+  return <GameContext.Provider value={{ state, dispatch }}>{children}</GameContext.Provider>;
 }
 
 export function useGame() {

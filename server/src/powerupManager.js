@@ -26,7 +26,9 @@ export function earnPowerup(room, playerId) {
       state.pendingChoices = null;
     }
 
-    const candidates = ALL_TYPES.filter((t) => t !== state.lastEarned && (state[t] || 0) < MAX_POWERUP_CHARGES);
+    const candidates = ALL_TYPES.filter(
+      (t) => t !== state.lastEarned && (state[t] || 0) < MAX_POWERUP_CHARGES
+    );
     const shuffled = [...candidates].sort(() => Math.random() - 0.5);
     const choices = shuffled.slice(0, Math.min(3, shuffled.length));
 

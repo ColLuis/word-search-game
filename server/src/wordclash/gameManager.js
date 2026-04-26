@@ -12,7 +12,9 @@ export function startRound(room) {
       scores: {},
       submissions: [],
     };
-    room.players.forEach((p) => { room.game.scores[p.id] = 0; });
+    room.players.forEach((p) => {
+      room.game.scores[p.id] = 0;
+    });
   }
 
   room.game.currentRound++;
@@ -41,7 +43,8 @@ export function validateWord(room, word) {
   const upper = word.toUpperCase();
   if (upper.length < 3) return { valid: false, reason: 'Word must be at least 3 letters' };
   if (upper.length > 10) return { valid: false, reason: 'Word too long' };
-  if (!canFormWord(room.game.letters, upper)) return { valid: false, reason: 'Cannot form word from available letters' };
+  if (!canFormWord(room.game.letters, upper))
+    return { valid: false, reason: 'Cannot form word from available letters' };
   if (!isValidWord(upper)) return { valid: false, reason: 'Not a valid word' };
   return { valid: true };
 }
@@ -128,7 +131,9 @@ export function isGameOver(room) {
 
 export function getWinner(room) {
   if (!room.game) return null;
-  const sorted = [...room.players].sort((a, b) => (room.game.scores[b.id] || 0) - (room.game.scores[a.id] || 0));
+  const sorted = [...room.players].sort(
+    (a, b) => (room.game.scores[b.id] || 0) - (room.game.scores[a.id] || 0)
+  );
   if (sorted.length < 2) return sorted[0] || null;
   if ((room.game.scores[sorted[0].id] || 0) === (room.game.scores[sorted[1].id] || 0)) return null; // tie
   return sorted[0];

@@ -11,7 +11,18 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export default function Grid() {
   const { state } = useGame();
-  const { grid, words, playerId, hintCells, hintWord, frozen, scrambled, rotated, bonusActive, shielded } = state;
+  const {
+    grid,
+    words,
+    playerId,
+    hintCells,
+    hintWord,
+    frozen,
+    scrambled,
+    rotated,
+    bonusActive,
+    shielded,
+  } = state;
   const { gridRef, draggedCells, onPointerDown, onPointerMove, onPointerUp } = useGridDrag(frozen);
 
   // Build found-cells map: cellKey -> 'self' | 'opponent'
@@ -84,7 +95,11 @@ export default function Grid() {
             if (dragging) bg = 'bg-blue-400/70';
             if (hinted) bg = 'bg-yellow-400 animate-pulse';
 
-            const displayLetter = frozen ? '' : (scrambleMap && scrambleMap.has(key) ? scrambleMap.get(key) : letter);
+            const displayLetter = frozen
+              ? ''
+              : scrambleMap && scrambleMap.has(key)
+                ? scrambleMap.get(key)
+                : letter;
 
             return (
               <div

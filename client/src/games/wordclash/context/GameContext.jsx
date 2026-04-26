@@ -3,11 +3,11 @@ import { createContext, useContext, useReducer } from 'react';
 const GameContext = createContext(null);
 
 const initialState = {
-  phase: 'home',         // home | lobby | playing | roundResults | gameOver
+  phase: 'home', // home | lobby | playing | roundResults | gameOver
   roomCode: null,
   playerId: null,
   playerName: null,
-  players: [],            // [{ id, name, color, score }]
+  players: [], // [{ id, name, color, score }]
   hostId: null,
   totalRounds: 5,
   roundTimeSeconds: 60,
@@ -16,9 +16,9 @@ const initialState = {
   validationStatus: null, // { word, valid, reason }
   submittedPlayerIds: [],
   iSubmitted: false,
-  roundSubmissions: [],   // [{ playerId, word, score }]
-  bestWords: [],          // top possible words for the round
-  scores: {},             // { playerId: totalScore }
+  roundSubmissions: [], // [{ playerId, word, score }]
+  bestWords: [], // top possible words for the round
+  scores: {}, // { playerId: totalScore }
   winner: null,
   toast: null,
   opponentDisconnected: false,
@@ -70,7 +70,10 @@ function gameReducer(state, action) {
       };
 
     case 'WORD_VALIDATION':
-      return { ...state, validationStatus: { word: action.word, valid: action.valid, reason: action.reason } };
+      return {
+        ...state,
+        validationStatus: { word: action.word, valid: action.valid, reason: action.reason },
+      };
 
     case 'PLAYER_SUBMITTED':
       return {
@@ -141,11 +144,7 @@ function gameReducer(state, action) {
 
 export function GameProvider({ children }) {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-  return (
-    <GameContext.Provider value={{ state, dispatch }}>
-      {children}
-    </GameContext.Provider>
-  );
+  return <GameContext.Provider value={{ state, dispatch }}>{children}</GameContext.Provider>;
 }
 
 export function useGame() {
