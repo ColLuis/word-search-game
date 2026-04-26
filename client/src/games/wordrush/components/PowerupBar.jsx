@@ -16,12 +16,13 @@ export default function PowerupBar() {
 
   return (
     <div className="flex gap-2 justify-center mt-2 flex-wrap">
-      {available.map(({ type, label, bg, hover, badge, badgeText }) => (
+      {available.map(({ type, label, emoji, bg, hover, badge, badgeText }) => (
         <button
           key={type}
           onClick={() => handleUse(type)}
-          className={`flex items-center gap-1 ${bg} ${hover} text-white text-sm px-3 py-1.5 rounded-lg transition`}
+          className={`flex items-center gap-1.5 ${bg} ${hover} text-white text-sm px-3 py-1.5 rounded-lg transition`}
         >
+          <span>{emoji}</span>
           <span>{label}</span>
           <span
             className={`${badge} ${badgeText} text-xs w-5 h-5 rounded-full flex items-center justify-center`}

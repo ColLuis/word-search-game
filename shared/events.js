@@ -19,7 +19,6 @@ export const EVENTS = {
   GAME_END: 'game:end',
   GAME_STATE: 'game:state',
   GAME_MULTIPLIER_UPDATE: 'game:multiplierUpdate',
-  GAME_FINAL_COUNTDOWN: 'game:finalCountdown',
 
   // Word events
   WORD_SUBMIT: 'word:submit',
