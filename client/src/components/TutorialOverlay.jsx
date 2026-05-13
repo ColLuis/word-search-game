@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ChunkyButton from './ui/ChunkyButton.jsx';
 
 const TUTORIALS = {
   wordrush: [
@@ -64,18 +65,20 @@ export default function TutorialOverlay({ game, onDismiss }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] px-4">
-      <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full text-center">
-        <div className="text-4xl mb-3">{current.icon}</div>
-        <h3 className="text-xl font-bold mb-2">{current.title}</h3>
-        <p className="text-gray-300 mb-6">{current.text}</p>
+    <div className="fixed inset-0 bg-ink/40 backdrop-blur-sm flex items-center justify-center z-[100] px-4">
+      <div className="bg-surface rounded-3xl p-7 max-w-sm w-full text-center shadow-card">
+        <div className="text-5xl mb-3">{current.icon}</div>
+        <h3 className="font-display text-2xl font-bold uppercase tracking-wider text-ink mb-2">
+          {current.title}
+        </h3>
+        <p className="text-ink-soft font-sans mb-6">{current.text}</p>
 
         {/* Dot indicators */}
-        <div className="flex justify-center gap-2 mb-4">
+        <div className="flex justify-center gap-2 mb-5">
           {steps.map((_, i) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full ${i === step ? 'bg-white' : 'bg-gray-600'}`}
+              className={`w-2 h-2 rounded-full ${i === step ? 'bg-accent-orange' : 'bg-tile-edge'}`}
             />
           ))}
         </div>
@@ -83,37 +86,28 @@ export default function TutorialOverlay({ game, onDismiss }) {
         {/* Navigation */}
         <div className="flex gap-2 justify-center mb-4">
           {step > 0 && (
-            <button
-              onClick={() => setStep(step - 1)}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm"
-            >
+            <ChunkyButton onClick={() => setStep(step - 1)} variant="neutral" size="sm">
               Previous
-            </button>
+            </ChunkyButton>
           )}
           {step < steps.length - 1 ? (
-            <button
-              onClick={() => setStep(step + 1)}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm"
-            >
+            <ChunkyButton onClick={() => setStep(step + 1)} variant="orange" size="sm">
               Next
-            </button>
+            </ChunkyButton>
           ) : (
-            <button
-              onClick={handleDismiss}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm"
-            >
+            <ChunkyButton onClick={handleDismiss} variant="green" size="sm">
               Got it!
-            </button>
+            </ChunkyButton>
           )}
         </div>
 
         {/* Don't show again */}
-        <label className="flex items-center justify-center gap-2 text-xs text-gray-400 cursor-pointer">
+        <label className="flex items-center justify-center gap-2 text-xs text-ink-muted font-sans cursor-pointer">
           <input
             type="checkbox"
             checked={dontShow}
             onChange={(e) => setDontShow(e.target.checked)}
-            className="rounded"
+            className="rounded accent-accent-orange"
           />
           Don&apos;t show again
         </label>

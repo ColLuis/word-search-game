@@ -18,23 +18,29 @@ export default function ScoreHeader() {
   const wordsRemaining = words.filter((w) => !w.found).length;
 
   return (
-    <div className="flex flex-col items-center mb-2 w-full gap-1">
-      <div className="flex items-center justify-between px-4 py-2 rounded-lg w-full bg-gray-800">
+    <div className="flex flex-col items-center mb-2 w-full max-w-[min(90vw,500px)] gap-1">
+      <div className="flex items-center justify-between px-4 py-2 rounded-2xl w-full bg-surface shadow-card">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <span className="font-semibold text-sm">{me?.name || 'You'}</span>
-          <span className="text-xl font-bold text-blue-400 score-pop">{myScore}</span>
+          <div className="w-3 h-3 rounded-full bg-accent-green" />
+          <span className="font-bold text-sm text-ink">{me?.name || 'You'}</span>
+          <span className="text-xl font-display font-bold text-accent-green score-pop">
+            {myScore}
+          </span>
         </div>
-        <span className="text-sm font-bold text-gray-500">{wordsRemaining} left</span>
+        <span className="text-xs font-display font-bold text-ink-muted uppercase tracking-wider">
+          {wordsRemaining} left
+        </span>
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-orange-400 score-pop">{oppScore}</span>
-          <span className="font-semibold text-sm">{opponent?.name || '---'}</span>
-          <div className="w-3 h-3 rounded-full bg-orange-500" />
+          <span className="text-xl font-display font-bold text-accent-orange score-pop">
+            {oppScore}
+          </span>
+          <span className="font-bold text-sm text-ink">{opponent?.name || '---'}</span>
+          <div className="w-3 h-3 rounded-full bg-accent-orange" />
         </div>
       </div>
 
       {multiplier > 1 && (
-        <span className="text-xs font-bold text-yellow-400 bg-yellow-400/20 px-3 py-1 rounded-full animate-pulse">
+        <span className="text-xs font-display font-bold uppercase tracking-wider text-accent-orange bg-accent-orange/15 px-3 py-1 rounded-full animate-pulse">
           {MULTIPLIER_LABELS[multiplier] || `${multiplier}x points!`}
         </span>
       )}

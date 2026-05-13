@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext.jsx';
 import { getSocket } from '../lib/socket.js';
 import { launchConfetti } from '../../../lib/confetti.js';
+import ChunkyButton from '../../../components/ui/ChunkyButton.jsx';
+import Card from '../../../components/ui/Card.jsx';
 
 function formatTime(ms) {
   if (ms == null) return '—';
@@ -80,28 +82,30 @@ export default function ResultsScreen() {
   const myWordsFound = words.filter((w) => w.foundBy === playerId).length;
   const oppWordsFound = words.filter((w) => w.foundBy === opponent?.id).length;
 
+  const headlineClasses = 'font-display text-4xl font-bold uppercase tracking-wider mb-1';
+
   return (
     <div className="flex flex-col items-center min-h-screen px-4 py-6 max-w-md mx-auto">
       {/* Header */}
       {seriesOver && seriesLength > 1 ? (
         <>
           <h2
-            className={`text-4xl font-bold mb-1 ${iSeriesWinner ? 'animate-celebrate-pulse text-yellow-400' : 'text-white'}`}
+            className={`${headlineClasses} ${iSeriesWinner ? 'animate-celebrate-pulse text-accent-orange' : 'text-ink'}`}
           >
             {iSeriesWinner ? 'Series Winner!' : 'Series Over!'}
           </h2>
-          <p className="text-gray-400 mb-4">
+          <p className="text-ink-soft font-sans mb-4">
             {iSeriesWinner ? 'You won the series!' : `${seriesWinner?.name} wins the series!`}
           </p>
         </>
       ) : (
         <>
           <h2
-            className={`text-4xl font-bold mb-1 ${iWon ? 'animate-celebrate-pulse text-yellow-400' : tie ? 'text-gray-300' : 'text-red-400'}`}
+            className={`${headlineClasses} ${iWon ? 'animate-celebrate-pulse text-accent-orange' : tie ? 'text-ink' : 'text-accent-red'}`}
           >
             {tie ? 'Tie Game!' : iWon ? 'You Win!' : 'You Lose!'}
           </h2>
-          <p className="text-gray-400 mb-4">
+          <p className="text-ink-soft font-sans mb-4">
             {tie
               ? 'Evenly matched!'
               : iWon
@@ -112,35 +116,45 @@ export default function ResultsScreen() {
       )}
 
       {/* Score Cards */}
-      <div className="flex gap-4 mb-4 w-full">
+      <div className="flex gap-3 mb-4 w-full">
         <div
-          className={`flex-1 rounded-xl p-3 text-center ${iWon ? 'bg-blue-900/60 ring-2 ring-blue-400' : 'bg-gray-800'}`}
+          className={`flex-1 rounded-2xl p-4 text-center bg-surface ${iWon ? 'ring-4 ring-accent-green' : ''}`}
         >
-          <p className="text-xs text-gray-400">{me?.name || 'You'}</p>
-          <p className="text-3xl font-black text-blue-400">{myScore}</p>
-          <p className="text-xs text-gray-500">{myWordsFound} words</p>
+          <p className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider">
+            {me?.name || 'You'}
+          </p>
+          <p className="text-4xl font-display font-bold text-accent-green">{myScore}</p>
+          <p className="text-xs text-ink-muted font-sans">{myWordsFound} words</p>
         </div>
         <div
-          className={`flex-1 rounded-xl p-3 text-center ${!tie && !iWon ? 'bg-orange-900/60 ring-2 ring-orange-400' : 'bg-gray-800'}`}
+          className={`flex-1 rounded-2xl p-4 text-center bg-surface ${!tie && !iWon ? 'ring-4 ring-accent-orange' : ''}`}
         >
-          <p className="text-xs text-gray-400">{opponent?.name || 'Opponent'}</p>
-          <p className="text-3xl font-black text-orange-400">{oppScore}</p>
-          <p className="text-xs text-gray-500">{oppWordsFound} words</p>
+          <p className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider">
+            {opponent?.name || 'Opponent'}
+          </p>
+          <p className="text-4xl font-display font-bold text-accent-orange">{oppScore}</p>
+          <p className="text-xs text-ink-muted font-sans">{oppWordsFound} words</p>
         </div>
       </div>
 
       {/* Series Score */}
       {seriesLength > 1 && (
         <div className="w-full mb-4">
-          <div className="flex justify-center gap-6 bg-gray-800 rounded-lg px-4 py-2">
+          <div className="flex justify-center gap-6 bg-surface rounded-2xl px-4 py-2">
             <div className="text-center">
-              <p className="text-xs text-gray-400">{me?.name}</p>
-              <p className="text-xl font-bold text-blue-400">{seriesWins[playerId] || 0}</p>
+              <p className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider">
+                {me?.name}
+              </p>
+              <p className="text-2xl font-display font-bold text-accent-green">
+                {seriesWins[playerId] || 0}
+              </p>
             </div>
-            <div className="text-gray-500 text-xl font-bold self-center">—</div>
+            <div className="text-ink-muted text-xl font-display font-bold self-center">—</div>
             <div className="text-center">
-              <p className="text-xs text-gray-400">{opponent?.name}</p>
-              <p className="text-xl font-bold text-orange-400">
+              <p className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider">
+                {opponent?.name}
+              </p>
+              <p className="text-2xl font-display font-bold text-accent-orange">
                 {opponent ? seriesWins[opponent.id] || 0 : 0}
               </p>
             </div>
@@ -152,38 +166,48 @@ export default function ResultsScreen() {
       {showStats && recap && (
         <div className="flex gap-2 mb-4 w-full animate-fade-in">
           {recap.fastestFind && (
-            <div className="flex-1 bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-2 text-center">
-              <p className="text-[10px] text-yellow-500 uppercase font-bold">Fastest Find</p>
-              <p className="text-sm font-bold text-yellow-300">{recap.fastestFind.word}</p>
-              <p className="text-xs text-gray-400">
+            <Card variant="teal" className="flex-1 !p-2 text-center">
+              <p className="text-[10px] font-sans font-bold uppercase tracking-wider opacity-80">
+                Fastest Find
+              </p>
+              <p className="text-sm font-display font-bold uppercase">{recap.fastestFind.word}</p>
+              <p className="text-xs opacity-80 font-sans">
                 {formatTime(recap.fastestFind.foundAtMs)} —{' '}
                 {recap.fastestFind.foundBy === playerId ? me?.name : opponent?.name}
               </p>
-            </div>
+            </Card>
           )}
-          <div className="flex-1 bg-purple-900/30 border border-purple-700/50 rounded-lg p-2 text-center">
-            <p className="text-[10px] text-purple-500 uppercase font-bold">Powerups Used</p>
+          <Card className="flex-1 !p-2 text-center">
+            <p className="text-[10px] font-sans font-bold text-ink-muted uppercase tracking-wider">
+              Powerups Used
+            </p>
             <div className="flex justify-center gap-3 mt-1">
-              <span className="text-sm font-bold text-blue-400">
+              <span className="text-sm font-display font-bold text-accent-green">
                 {recap.powerupsUsed[playerId] || 0}
               </span>
-              <span className="text-gray-600">vs</span>
-              <span className="text-sm font-bold text-orange-400">
+              <span className="text-ink-muted">vs</span>
+              <span className="text-sm font-display font-bold text-accent-orange">
                 {opponent ? recap.powerupsUsed[opponent.id] || 0 : 0}
               </span>
             </div>
-          </div>
-          <div className="flex-1 bg-gray-800 border border-gray-700/50 rounded-lg p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase font-bold">Duration</p>
-            <p className="text-sm font-bold text-gray-300">{formatTime(recap.gameDuration)}</p>
-          </div>
+          </Card>
+          <Card className="flex-1 !p-2 text-center">
+            <p className="text-[10px] font-sans font-bold text-ink-muted uppercase tracking-wider">
+              Duration
+            </p>
+            <p className="text-sm font-display font-bold text-ink">
+              {formatTime(recap.gameDuration)}
+            </p>
+          </Card>
         </div>
       )}
 
       {/* Word-by-Word Breakdown */}
       {showWords && (
         <div className="w-full mb-4">
-          <h3 className="text-xs text-gray-500 uppercase font-bold mb-2">Word Breakdown</h3>
+          <h3 className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider mb-2">
+            Word Breakdown
+          </h3>
           <div className="space-y-1">
             {(recap?.wordDetails || words).map((w, i) => {
               const isMe = w.foundBy === playerId;
@@ -191,25 +215,27 @@ export default function ResultsScreen() {
               return (
                 <div
                   key={w.word}
-                  className={`flex items-center justify-between px-3 py-1.5 rounded text-sm transition-all ${
-                    isFastest ? 'bg-yellow-900/40 ring-1 ring-yellow-600' : 'bg-gray-800'
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all ${
+                    isFastest ? 'bg-accent-orange/15 ring-2 ring-accent-orange' : 'bg-surface'
                   }`}
                   style={{ animationDelay: `${i * 50}ms` }}
                 >
                   <div className="flex items-center gap-2">
-                    {isFastest && <span className="text-yellow-400 text-xs">⚡</span>}
-                    <span className="font-semibold">{w.word}</span>
+                    {isFastest && <span className="text-accent-orange text-sm">⚡</span>}
+                    <span className="font-display font-bold uppercase tracking-wider text-ink">
+                      {w.word}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     {w.foundAtMs != null && (
-                      <span className="text-xs text-gray-500">{formatTime(w.foundAtMs)}</span>
+                      <span className="text-xs text-ink-muted font-sans">
+                        {formatTime(w.foundAtMs)}
+                      </span>
                     )}
                     <span
-                      className={
-                        isMe
-                          ? 'text-blue-400 text-xs font-bold'
-                          : 'text-orange-400 text-xs font-bold'
-                      }
+                      className={`text-xs font-display font-bold uppercase tracking-wider ${
+                        isMe ? 'text-accent-green' : 'text-accent-orange'
+                      }`}
                     >
                       {isMe ? me?.name : opponent?.name}
                     </span>
@@ -224,52 +250,43 @@ export default function ResultsScreen() {
       {/* Buttons */}
       <div className="flex flex-col gap-2 w-full mt-auto">
         {oppVoted && !iVoted && (
-          <p className="text-center text-green-400 text-sm font-bold animate-pulse">
+          <p className="text-center text-accent-green text-sm font-display font-bold uppercase tracking-wider animate-pulse">
             {opponent?.name} wants a rematch!
           </p>
         )}
 
         {canRematch && (
-          <button
+          <ChunkyButton
             onClick={handleRematch}
             disabled={iVoted}
-            className={`font-semibold py-3 px-6 rounded-lg transition ${
-              iVoted
-                ? 'bg-green-800 text-green-300 cursor-wait'
-                : 'bg-green-600 hover:bg-green-500 text-white'
-            }`}
+            variant={iVoted ? 'neutral' : 'green'}
+            size="lg"
           >
             {iVoted ? `Waiting for ${opponent?.name}...` : 'Rematch'}
-          </button>
+          </ChunkyButton>
         )}
 
         {!seriesOver && seriesLength > 1 && (
           <>
             {oppVotedNext && !iVotedNext && (
-              <p className="text-center text-blue-400 text-sm font-bold animate-pulse">
+              <p className="text-center text-accent-green text-sm font-display font-bold uppercase tracking-wider animate-pulse">
                 {opponent?.name} is ready for the next game!
               </p>
             )}
-            <button
+            <ChunkyButton
               onClick={handlePlayAgain}
               disabled={iVotedNext}
-              className={`font-semibold py-3 px-6 rounded-lg transition ${
-                iVotedNext
-                  ? 'bg-blue-800 text-blue-300 cursor-wait'
-                  : 'bg-blue-600 hover:bg-blue-500 text-white'
-              }`}
+              variant={iVotedNext ? 'neutral' : 'orange'}
+              size="lg"
             >
               {iVotedNext ? `Waiting for ${opponent?.name}...` : 'Next Game'}
-            </button>
+            </ChunkyButton>
           </>
         )}
 
-        <button
-          onClick={handleHome}
-          className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition"
-        >
+        <ChunkyButton onClick={handleHome} variant="neutral" size="lg">
           Home
-        </button>
+        </ChunkyButton>
       </div>
     </div>
   );

@@ -71,7 +71,7 @@ export default function Grid() {
     <div className="relative w-full max-w-[min(90vw,500px)]">
       <div
         ref={gridRef}
-        className={`grid select-none aspect-square w-full transition-all duration-300 ${bonusActive ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''} ${shielded ? 'ring-2 ring-sky-400 ring-offset-2 ring-offset-gray-900 rounded-md' : ''} ${scrambled ? 'animate-shake' : ''} ${rotated ? 'rotate-180' : ''}`}
+        className={`grid select-none aspect-square w-full p-2 bg-surface rounded-2xl shadow-card transition-all duration-300 ${bonusActive ? 'ring-4 ring-accent-green ring-offset-2 ring-offset-canvas' : ''} ${shielded ? 'ring-4 ring-accent-teal ring-offset-2 ring-offset-canvas' : ''} ${scrambled ? 'animate-shake' : ''} ${rotated ? 'rotate-180' : ''}`}
         style={{
           gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
           gridTemplateRows: `repeat(${GRID_SIZE}, 1fr)`,
@@ -88,12 +88,12 @@ export default function Grid() {
             const dragging = dragSet.has(key);
             const hinted = hintSet.has(key);
 
-            let bg = 'bg-gray-800';
-            if (found === 'self') bg = 'bg-blue-600/60';
-            else if (found === 'opponent') bg = 'bg-orange-600/60';
+            let bg = 'bg-tile-face text-ink';
+            if (found === 'self') bg = 'bg-accent-green/70 text-white';
+            else if (found === 'opponent') bg = 'bg-accent-orange/70 text-white';
 
-            if (dragging) bg = 'bg-blue-400/70';
-            if (hinted) bg = 'bg-yellow-400 animate-pulse';
+            if (dragging) bg = 'bg-accent-orange text-white';
+            if (hinted) bg = 'bg-accent-orange text-white animate-pulse';
 
             const displayLetter = frozen
               ? ''
@@ -104,7 +104,7 @@ export default function Grid() {
             return (
               <div
                 key={key}
-                className={`flex items-center justify-center text-xs sm:text-sm font-bold rounded-sm m-[1px] transition-colors duration-100 ${bg}`}
+                className={`flex items-center justify-center text-xs sm:text-sm font-display font-bold uppercase rounded-md m-[1px] transition-colors duration-100 ${bg}`}
               >
                 {displayLetter}
               </div>
@@ -113,31 +113,31 @@ export default function Grid() {
         )}
       </div>
       {hintWord && (
-        <div className="mt-2 text-center text-yellow-400 text-sm font-bold animate-pulse">
+        <div className="mt-2 text-center text-accent-orange text-sm font-display font-bold uppercase tracking-wider animate-pulse">
           Find: {hintWord}
         </div>
       )}
       {bonusActive && (
         <div className="mt-2 text-center">
-          <span className="bg-green-500 text-black text-sm font-extrabold px-4 py-1 rounded-full animate-bounce inline-block">
+          <span className="bg-accent-green text-white text-sm font-display font-bold uppercase tracking-wider px-4 py-1 rounded-full animate-bounce inline-block">
             2x BONUS — Next word is worth double!
           </span>
         </div>
       )}
       {shielded && (
         <div className="mt-2 text-center">
-          <span className="bg-sky-500 text-white text-sm font-extrabold px-4 py-1 rounded-full inline-block">
+          <span className="bg-accent-teal text-white text-sm font-display font-bold uppercase tracking-wider px-4 py-1 rounded-full inline-block">
             SHIELD ACTIVE
           </span>
         </div>
       )}
       {scrambled && (
-        <div className="mt-2 text-center text-purple-400 text-sm font-bold animate-pulse">
+        <div className="mt-2 text-center text-ink text-sm font-display font-bold uppercase tracking-wider animate-pulse">
           SCRAMBLED!
         </div>
       )}
       {rotated && (
-        <div className="mt-2 text-center text-orange-400 text-sm font-bold animate-pulse">
+        <div className="mt-2 text-center text-accent-orange text-sm font-display font-bold uppercase tracking-wider animate-pulse">
           ROTATED!
         </div>
       )}

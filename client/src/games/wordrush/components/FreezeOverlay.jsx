@@ -5,8 +5,10 @@ export default function FreezeOverlay() {
   if (!state.frozen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/90 pointer-events-auto z-40 flex items-center justify-center">
-      <div className="text-4xl font-bold text-cyan-300 animate-pulse">FROZEN!</div>
+    <div className="fixed inset-0 bg-accent-teal/90 pointer-events-auto z-40 flex items-center justify-center">
+      <div className="text-5xl font-display font-bold uppercase tracking-wider text-white animate-pulse">
+        FROZEN!
+      </div>
     </div>
   );
 }

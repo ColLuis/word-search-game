@@ -69,41 +69,47 @@ export default function PowerupRoulette() {
         type,
         label: type,
         emoji: '?',
-        bg: 'bg-gray-700',
-        hover: 'hover:bg-gray-600',
+        bg: 'bg-surface',
+        hover: 'hover:brightness-105',
       }
   );
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
-      <div className="pointer-events-auto w-full max-w-sm mx-4 mb-4 bg-gray-900/95 backdrop-blur border border-gray-700 rounded-2xl px-4 py-3 shadow-xl animate-fade-in">
+      <div className="pointer-events-auto w-full max-w-sm mx-4 mb-4 bg-surface border-2 border-tile-edge rounded-2xl px-4 py-3 shadow-card animate-fade-in">
         {phase === 'spinning' && (
           <div className="flex items-center gap-3">
             <span className="text-3xl">
               {POWERUP_CONFIG[spinIndex % POWERUP_CONFIG.length].emoji}
             </span>
-            <span className="text-gray-400 text-sm font-medium">Powerup incoming…</span>
+            <span className="text-ink-soft text-sm font-display font-bold uppercase tracking-wider">
+              Powerup incoming…
+            </span>
           </div>
         )}
 
         {phase === 'choosing' && (
           <>
-            <p className="text-gray-400 text-xs font-medium mb-2">Pick your powerup</p>
+            <p className="text-ink-soft text-xs font-display font-bold uppercase tracking-wider mb-2">
+              Pick your powerup
+            </p>
             <div className="flex gap-2">
               {choiceConfigs.map(({ type, label, emoji, bg, hover }) => (
                 <button
                   key={type}
                   onClick={() => handlePick(type)}
-                  className={`${bg} ${hover} flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl transition transform hover:scale-105 active:scale-95`}
+                  className={`${bg} ${hover} flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl shadow-tile transition transform hover:-translate-y-0.5 active:translate-y-0.5`}
                 >
                   <span className="text-2xl">{emoji}</span>
-                  <span className="text-white text-xs font-bold leading-tight">{label}</span>
+                  <span className="text-white text-xs font-display font-bold uppercase tracking-wider leading-tight">
+                    {label}
+                  </span>
                 </button>
               ))}
             </div>
-            <div className="mt-2 w-full h-0.5 bg-gray-700 rounded-full overflow-hidden">
+            <div className="mt-2 w-full h-1 bg-surface-sunken rounded-full overflow-hidden">
               <div
-                className="h-full bg-yellow-500 rounded-full"
+                className="h-full bg-accent-orange rounded-full"
                 style={{ animation: `timer-shrink ${AUTO_PICK_DELAY}ms linear forwards` }}
               />
             </div>

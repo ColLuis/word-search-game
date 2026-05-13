@@ -5,30 +5,32 @@ export default function WordBuilder({ tiles, onTileClick, validationStatus, curr
   const { setNodeRef, isOver } = useDroppable({ id: 'builder-drop-zone' });
 
   let statusText = 'Build a word...';
-  let statusColor = 'text-gray-500';
+  let statusColor = 'text-ink-muted';
 
   if (currentWord.length > 0 && currentWord.length < 3) {
     statusText = 'Too short (min 3 letters)';
-    statusColor = 'text-gray-500';
+    statusColor = 'text-ink-muted';
   } else if (validationStatus && validationStatus.word === currentWord) {
     if (validationStatus.valid) {
       statusText = 'Valid!';
-      statusColor = 'text-green-400';
+      statusColor = 'text-accent-green';
     } else {
       statusText = validationStatus.reason || 'Not a valid word';
-      statusColor = 'text-red-400';
+      statusColor = 'text-accent-red';
     }
   } else if (currentWord.length >= 3) {
     statusText = 'Checking...';
-    statusColor = 'text-yellow-400';
+    statusColor = 'text-accent-orange';
   }
 
   return (
     <div className="w-full">
       <div
         ref={setNodeRef}
-        className={`flex justify-center gap-1 sm:gap-2 p-2 sm:p-3 rounded-xl min-h-[56px] border-2 border-dashed transition-colors ${
-          isOver ? 'border-orange-400 bg-orange-400/10' : 'border-gray-600 bg-gray-800/30'
+        className={`flex justify-center gap-1 sm:gap-2 p-3 sm:p-4 rounded-2xl min-h-[64px] border-2 border-dashed transition-colors ${
+          isOver
+            ? 'border-accent-orange bg-accent-orange/10'
+            : 'border-ink-muted/40 bg-surface-sunken'
         }`}
       >
         {tiles.map((tile) => (
@@ -40,10 +42,16 @@ export default function WordBuilder({ tiles, onTileClick, validationStatus, curr
           />
         ))}
         {tiles.length === 0 && (
-          <p className="text-gray-600 text-sm self-center">Tap letters to build a word</p>
+          <p className="text-ink-muted text-sm self-center font-sans">
+            Tap letters to build a word
+          </p>
         )}
       </div>
-      <p className={`text-center text-sm mt-2 font-semibold ${statusColor}`}>{statusText}</p>
+      <p
+        className={`text-center text-sm mt-2 font-bold font-sans uppercase tracking-wider ${statusColor}`}
+      >
+        {statusText}
+      </p>
     </div>
   );
 }

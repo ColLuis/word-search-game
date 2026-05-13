@@ -14,12 +14,12 @@ export default function LetterTile({ tile, onClick, variant = 'bank' }) {
     : undefined;
 
   const baseClasses =
-    'w-[calc((100vw-4.5rem)/10)] max-w-14 aspect-square rounded-lg flex items-center justify-center text-lg sm:text-xl font-bold select-none transition-shadow';
+    'w-[calc((100vw-4.5rem)/10)] max-w-14 aspect-square rounded-lg flex items-center justify-center text-lg sm:text-2xl font-display font-bold uppercase select-none transition-shadow';
 
   const variantClasses =
     variant === 'builder'
-      ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30'
-      : 'bg-gray-700 text-white hover:bg-gray-600';
+      ? 'bg-accent-orange text-white shadow-tile'
+      : 'bg-tile-face text-ink shadow-tile hover:-translate-y-0.5';
 
   return (
     <div

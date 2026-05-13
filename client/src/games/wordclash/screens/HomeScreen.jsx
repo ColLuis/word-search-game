@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getSocket } from '../lib/socket.js';
+import Tile from '../../../components/ui/Tile.jsx';
+import ChunkyButton from '../../../components/ui/ChunkyButton.jsx';
 
 export default function HomeScreen() {
   const [mode, setMode] = useState(null);
@@ -31,30 +33,35 @@ export default function HomeScreen() {
     });
   };
 
+  const inputClasses =
+    'bg-tile-face border-2 border-tile-edge rounded-xl px-4 py-3 text-ink font-display font-bold placeholder:text-ink-muted placeholder:font-sans placeholder:font-normal focus:outline-none focus:border-accent-orange';
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
-      <h1 className="text-5xl font-bold mb-2 bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-        WordClash
-      </h1>
-      <p className="text-gray-400 mb-2">Form words, outscore opponents</p>
-      <Link to="/" className="text-gray-500 hover:text-gray-300 text-sm mb-6 transition">
-        Back to Games
+      {/* Wordmark */}
+      <div className="flex gap-1.5 mb-6">
+        {['W', 'O', 'R', 'D'].map((l, i) => (
+          <Tile key={`w-${i}`} letter={l} size="md" variant={i === 1 ? 'highlight' : 'default'} />
+        ))}
+        <div className="w-2" />
+        {['C', 'L', 'A', 'S', 'H'].map((l, i) => (
+          <Tile key={`c-${i}`} letter={l} size="md" variant={i === 0 ? 'highlight' : 'default'} />
+        ))}
+      </div>
+
+      <p className="text-ink-soft font-display text-lg mb-2">Form words, outscore opponents</p>
+      <Link to="/" className="text-ink-muted hover:text-ink text-sm font-sans mb-8 transition">
+        ← Back to Games
       </Link>
 
       {!mode && (
         <div className="flex flex-col gap-3 w-full max-w-xs">
-          <button
-            onClick={() => setMode('create')}
-            className="bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg transition"
-          >
+          <ChunkyButton onClick={() => setMode('create')} variant="orange" size="lg">
             Create Room
-          </button>
-          <button
-            onClick={() => setMode('join')}
-            className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition"
-          >
+          </ChunkyButton>
+          <ChunkyButton onClick={() => setMode('join')} variant="green" size="lg">
             Join Room
-          </button>
+          </ChunkyButton>
         </div>
       )}
 
@@ -69,7 +76,7 @@ export default function HomeScreen() {
               setError('');
             }}
             maxLength={15}
-            className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500"
+            className={inputClasses}
           />
 
           {mode === 'join' && (
@@ -82,24 +89,25 @@ export default function HomeScreen() {
                 setError('');
               }}
               maxLength={6}
-              className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 uppercase tracking-widest focus:outline-none focus:border-orange-500"
+              className={`${inputClasses} uppercase tracking-widest text-center`}
             />
           )}
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-accent-red text-sm font-bold font-sans">{error}</p>}
 
-          <button
+          <ChunkyButton
             onClick={mode === 'create' ? handleCreate : handleJoin}
-            className="bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg transition"
+            variant="orange"
+            size="lg"
           >
             {mode === 'create' ? 'Create' : 'Join'}
-          </button>
+          </ChunkyButton>
           <button
             onClick={() => {
               setMode(null);
               setError('');
             }}
-            className="text-gray-400 hover:text-white text-sm transition"
+            className="text-ink-soft hover:text-ink text-sm font-sans font-bold transition"
           >
             Back
           </button>

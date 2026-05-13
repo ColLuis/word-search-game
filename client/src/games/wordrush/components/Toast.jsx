@@ -5,7 +5,7 @@ export default function Toast() {
   if (!state.toast) return null;
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in-out">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-accent-red text-white px-4 py-2 rounded-xl shadow-card font-sans font-bold animate-fade-in-out">
       {state.toast}
     </div>
   );

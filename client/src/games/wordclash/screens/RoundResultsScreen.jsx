@@ -1,6 +1,8 @@
 import { useGame } from '../context/GameContext.jsx';
 import { getSocket } from '../lib/socket.js';
 import ScoreBoard from '../components/ScoreBoard.jsx';
+import ChunkyButton from '../../../components/ui/ChunkyButton.jsx';
+import Card from '../../../components/ui/Card.jsx';
 
 export default function RoundResultsScreen() {
   const { state } = useGame();
@@ -32,8 +34,10 @@ export default function RoundResultsScreen() {
 
   return (
     <div className="flex flex-col items-center min-h-screen px-4 py-6 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-1">Round {currentRound} Results</h2>
-      <p className="text-gray-400 text-sm mb-6">
+      <h2 className="font-display text-3xl font-bold uppercase tracking-wider text-ink mb-1">
+        Round {currentRound} Results
+      </h2>
+      <p className="text-ink-soft text-sm font-sans mb-6">
         {totalRounds - currentRound} round{totalRounds - currentRound !== 1 ? 's' : ''} remaining
       </p>
 
@@ -46,34 +50,45 @@ export default function RoundResultsScreen() {
           const isHighest = sub.score === highestScore && sub.score > 0;
 
           return (
-            <div
+            <Card
               key={sub.playerId}
-              className={`bg-gray-800 rounded-lg px-4 py-3 flex items-center gap-3 ${
-                isHighest ? 'ring-1 ring-yellow-400/50' : ''
+              className={`!p-3 flex items-center gap-3 ${
+                isHighest ? 'ring-2 ring-accent-orange' : ''
               }`}
             >
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 text-white"
                 style={{ backgroundColor: player.color }}
               >
                 {player.name[0].toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm">{isMe ? 'You' : player.name}</span>
-                  {isHighest && <span className="text-yellow-400 text-xs">Best</span>}
+                  <span className="font-bold text-sm text-ink">{isMe ? 'You' : player.name}</span>
+                  {isHighest && (
+                    <span className="text-accent-orange text-xs font-bold font-sans uppercase tracking-wider">
+                      Best
+                    </span>
+                  )}
                 </div>
-                <p className="text-lg font-mono font-bold truncate" style={{ color: player.color }}>
-                  {sub.word || <span className="text-gray-600 italic text-sm">no word</span>}
+                <p
+                  className="text-lg font-display font-bold tracking-wider uppercase truncate"
+                  style={{ color: player.color }}
+                >
+                  {sub.word || (
+                    <span className="text-ink-muted italic text-sm normal-case">no word</span>
+                  )}
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-xl font-bold" style={{ color: player.color }}>
+                <p className="text-xl font-display font-bold" style={{ color: player.color }}>
                   +{sub.score}
                 </p>
-                {sub.word && <p className="text-xs text-gray-500">{sub.word.length} letters</p>}
+                {sub.word && (
+                  <p className="text-xs text-ink-muted font-sans">{sub.word.length} letters</p>
+                )}
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>
@@ -81,14 +96,19 @@ export default function RoundResultsScreen() {
       {/* Best possible words */}
       {bestWords.length > 0 && (
         <div className="w-full mb-6">
-          <h3 className="text-sm text-gray-500 uppercase mb-2">Best Possible Words</h3>
+          <h3 className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider mb-2">
+            Best Possible Words
+          </h3>
           <div className="flex flex-wrap gap-2">
             {bestWords.map((word) => (
               <span
                 key={word}
-                className="bg-gray-800 border border-gray-700 text-gray-300 text-sm font-mono font-semibold px-3 py-1.5 rounded-lg"
+                className="bg-tile-face shadow-tile text-ink text-sm font-display font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl"
               >
-                {word} <span className="text-gray-500 text-xs">{word.length}L</span>
+                {word}{' '}
+                <span className="text-ink-muted text-xs font-sans normal-case tracking-normal">
+                  {word.length}L
+                </span>
               </span>
             ))}
           </div>
@@ -96,21 +116,22 @@ export default function RoundResultsScreen() {
       )}
 
       {/* Running totals */}
-      <h3 className="text-sm text-gray-500 uppercase mb-2">Standings</h3>
+      <h3 className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider mb-2">
+        Standings
+      </h3>
       <ScoreBoard players={players} scores={scores} />
 
       <div className="w-full mt-6">
         {isLastRound ? (
-          <p className="text-center text-gray-400 text-sm animate-pulse">Final results coming...</p>
+          <p className="text-center text-ink-soft text-sm font-sans font-bold animate-pulse">
+            Final results coming...
+          </p>
         ) : !iReady ? (
-          <button
-            onClick={handleReady}
-            className="w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg transition"
-          >
+          <ChunkyButton onClick={handleReady} variant="green" size="lg" className="w-full">
             Ready for Next Round
-          </button>
+          </ChunkyButton>
         ) : (
-          <p className="text-center text-green-400 text-sm font-semibold animate-pulse">
+          <p className="text-center text-accent-green text-sm font-display font-bold uppercase tracking-wider animate-pulse">
             Waiting for others... ({readyCount}/{totalPlayers})
           </p>
         )}

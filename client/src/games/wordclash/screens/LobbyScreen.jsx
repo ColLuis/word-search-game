@@ -1,6 +1,8 @@
 import { useGame } from '../context/GameContext.jsx';
 import { getSocket } from '../lib/socket.js';
 import TutorialOverlay from '../../../components/TutorialOverlay.jsx';
+import ChunkyButton from '../../../components/ui/ChunkyButton.jsx';
+import Card from '../../../components/ui/Card.jsx';
 
 const ROUND_OPTIONS = [3, 5, 7];
 const TIMER_OPTIONS = [30, 60, 90];
@@ -24,63 +26,63 @@ export default function LobbyScreen() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4">
+    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-6">
       <TutorialOverlay game="wordclash" />
-      <h2 className="text-2xl font-bold mb-4">Lobby</h2>
+      <h2 className="font-display text-3xl font-bold uppercase tracking-wider text-ink mb-4">
+        Lobby
+      </h2>
 
       <div className="flex items-center gap-2 mb-6">
-        <span className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-2xl font-mono tracking-[0.3em]">
+        <span className="bg-tile-face shadow-tile rounded-xl px-5 py-3 text-2xl font-display font-bold tracking-[0.3em] text-ink">
           {roomCode}
         </span>
-        <button
-          onClick={handleCopy}
-          className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-lg text-sm transition"
-        >
+        <ChunkyButton onClick={handleCopy} variant="neutral" size="sm">
           Copy
-        </button>
+        </ChunkyButton>
       </div>
 
       <div className="w-full max-w-xs space-y-2 mb-6">
         {players.map((p) => (
-          <div
-            key={p.id}
-            className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 flex items-center gap-3"
-          >
+          <Card key={p.id} className="!p-3 flex items-center gap-3">
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
               style={{ backgroundColor: p.color }}
             >
               {p.name[0].toUpperCase()}
             </div>
-            <span className="font-semibold flex-1">{p.name}</span>
+            <span className="font-bold text-ink flex-1">{p.name}</span>
             {p.id === hostId && (
-              <span className="text-xs text-orange-400 bg-orange-400/20 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold font-sans uppercase tracking-wider text-accent-orange bg-accent-orange/15 px-2 py-0.5 rounded-full">
                 Host
               </span>
             )}
-            {p.id === playerId && <span className="text-xs text-gray-500">You</span>}
-          </div>
+            {p.id === playerId && p.id !== hostId && (
+              <span className="text-xs font-sans font-bold text-ink-muted">You</span>
+            )}
+          </Card>
         ))}
         {players.length < 4 && (
-          <div className="bg-gray-800/50 border border-dashed border-gray-700 rounded-lg px-4 py-3 text-center text-gray-500 text-sm">
+          <div className="rounded-2xl px-4 py-3 text-center text-ink-muted text-sm font-sans border-2 border-dashed border-ink-muted/40">
             Waiting for players...
           </div>
         )}
       </div>
 
       {isHost && (
-        <div className="w-full max-w-xs space-y-3 mb-6">
+        <div className="w-full max-w-xs space-y-4 mb-6">
           <div>
-            <label className="text-xs text-gray-500 uppercase mb-1 block">Rounds</label>
+            <label className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider mb-2 block">
+              Rounds
+            </label>
             <div className="flex gap-2">
               {ROUND_OPTIONS.map((r) => (
                 <button
                   key={r}
                   onClick={() => handleSettingsChange({ totalRounds: r })}
-                  className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
+                  className={`flex-1 py-2 rounded-xl text-sm font-display font-bold transition ${
                     totalRounds === r
-                      ? 'bg-orange-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      ? 'bg-accent-orange text-white shadow-tile'
+                      : 'bg-surface text-ink-soft hover:bg-surface-sunken'
                   }`}
                 >
                   {r}
@@ -90,16 +92,18 @@ export default function LobbyScreen() {
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 uppercase mb-1 block">Timer (seconds)</label>
+            <label className="text-xs font-sans font-bold text-ink-muted uppercase tracking-wider mb-2 block">
+              Timer
+            </label>
             <div className="flex gap-2">
               {TIMER_OPTIONS.map((t) => (
                 <button
                   key={t}
                   onClick={() => handleSettingsChange({ roundTimeSeconds: t })}
-                  className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
+                  className={`flex-1 py-2 rounded-xl text-sm font-display font-bold transition ${
                     roundTimeSeconds === t
-                      ? 'bg-orange-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      ? 'bg-accent-orange text-white shadow-tile'
+                      : 'bg-surface text-ink-soft hover:bg-surface-sunken'
                   }`}
                 >
                   {t}s
@@ -108,20 +112,24 @@ export default function LobbyScreen() {
             </div>
           </div>
 
-          <button
+          <ChunkyButton
             onClick={handleStart}
             disabled={players.length < 2}
-            className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:text-gray-500 text-white font-semibold py-3 rounded-lg transition"
+            variant="green"
+            size="lg"
+            className="w-full"
           >
             Start Game
-          </button>
+          </ChunkyButton>
         </div>
       )}
 
-      {!isHost && <p className="text-gray-500 text-sm">Waiting for host to start...</p>}
+      {!isHost && (
+        <p className="text-ink-muted text-sm font-sans font-bold">Waiting for host to start...</p>
+      )}
 
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-accent-red text-white px-4 py-2 rounded-xl shadow-card font-sans font-bold">
           {toast}
         </div>
       )}

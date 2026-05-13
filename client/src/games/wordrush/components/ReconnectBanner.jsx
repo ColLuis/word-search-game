@@ -5,7 +5,7 @@ export default function ReconnectBanner() {
   if (!state.opponentDisconnected) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-yellow-600 text-white text-center py-2 text-sm z-50">
+    <div className="fixed top-0 left-0 right-0 bg-accent-orange text-white text-center py-2 text-sm font-bold font-sans z-50 shadow-card">
       Opponent disconnected. Waiting for reconnection...
     </div>
   );

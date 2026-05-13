@@ -5,8 +5,10 @@ export default function CountdownOverlay() {
   if (state.phase !== 'countdown') return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-      <span className="text-8xl font-bold text-white animate-ping-once">{state.countdown}</span>
+    <div className="fixed inset-0 bg-canvas/95 backdrop-blur-sm flex items-center justify-center z-50">
+      <span className="text-[12rem] font-display font-bold text-accent-orange animate-ping-once">
+        {state.countdown}
+      </span>
     </div>
   );
 }
