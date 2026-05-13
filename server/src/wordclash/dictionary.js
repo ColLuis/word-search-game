@@ -39,6 +39,12 @@ class Trie {
 let trie = null;
 let commonWords = null;
 
+/**
+ * Proper nouns and other non-game-friendly words that leak into the common-words
+ * source list. Extend as needed.
+ */
+const BLOCKLIST = new Set(['ABIGAIL', 'AMAZON', 'BOSTON', 'EASTER', 'JOHN', 'TEXAS', 'YAHOO']);
+
 export async function initDictionary() {
   trie = new Trie();
   const filePath = path.join(__dirname, '../../data/words_alpha.txt');
@@ -54,13 +60,18 @@ export async function initDictionary() {
     }
   }
 
-  // Load common words for filtering best-word suggestions
+  // Load common words for filtering best-word suggestions.
+  // Skip blocklisted proper nouns and the few junk entries that leak through.
   commonWords = new Set();
   const commonPath = path.join(__dirname, '../../data/common_words.txt');
   const commonContent = readFileSync(commonPath, 'utf-8');
   for (const line of commonContent.split(/\r?\n/)) {
     const word = line.trim().toUpperCase();
-    if (word.length >= DEFAULTS.MIN_WORD_LENGTH && word.length <= DEFAULTS.MAX_WORD_LENGTH) {
+    if (
+      word.length >= DEFAULTS.MIN_WORD_LENGTH &&
+      word.length <= DEFAULTS.MAX_WORD_LENGTH &&
+      !BLOCKLIST.has(word)
+    ) {
       commonWords.add(word);
     }
   }
