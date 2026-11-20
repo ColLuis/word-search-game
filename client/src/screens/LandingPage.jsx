@@ -49,7 +49,44 @@ const games = [
       </svg>
     ),
   },
+  {
+    name: 'WordLink',
+    path: '/wordlink',
+    description: 'Co-op clue game. Link words with one-word clues, then rebuild the board.',
+    players: '2–6 players',
+    accent: 'teal',
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        strokeWidth={2}
+        stroke="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          d="M4 20c0-9 6.5-16 16-16 0 9.5-7 16-16 16Z"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        <path d="M4 20 14 10" strokeLinecap="round" />
+      </svg>
+    ),
+  },
 ];
+
+const ACCENTS = {
+  green: { border: 'border-accent-green', text: 'text-accent-green', chip: 'bg-accent-green/15' },
+  orange: {
+    border: 'border-accent-orange',
+    text: 'text-accent-orange',
+    chip: 'bg-accent-orange/15',
+  },
+  teal: {
+    border: 'border-accent-teal-edge',
+    text: 'text-accent-teal-edge',
+    chip: 'bg-accent-teal/20',
+  },
+};
 
 export default function LandingPage() {
   return (
@@ -76,17 +113,15 @@ export default function LandingPage() {
           <Link key={game.path} to={game.path} className="block group">
             <Card
               className={[
-                'group-hover:-translate-y-0.5 transition-transform !p-0 overflow-hidden flex',
-                game.accent === 'orange'
-                  ? 'border-l-4 border-accent-orange'
-                  : 'border-l-4 border-accent-green',
+                'group-hover:-translate-y-0.5 transition-transform !p-0 overflow-hidden flex border-l-4',
+                ACCENTS[game.accent].border,
               ].join(' ')}
             >
               {/* Colored icon column */}
               <div
                 className={[
                   'flex items-center justify-center px-4',
-                  game.accent === 'orange' ? 'text-accent-orange' : 'text-accent-green',
+                  ACCENTS[game.accent].text,
                 ].join(' ')}
               >
                 {game.icon}
@@ -101,20 +136,15 @@ export default function LandingPage() {
                   <span
                     className={[
                       'inline-block rounded-full px-3 py-1 text-xs font-bold font-sans uppercase tracking-wider whitespace-nowrap ml-2 mt-0.5',
-                      game.accent === 'orange'
-                        ? 'bg-accent-orange/15 text-accent-orange'
-                        : 'bg-accent-green/15 text-accent-green',
+                      ACCENTS[game.accent].chip,
+                      ACCENTS[game.accent].text,
                     ].join(' ')}
                   >
                     {game.players}
                   </span>
                 </div>
                 <p className="text-ink-soft text-sm mb-4 max-w-[18rem]">{game.description}</p>
-                <ChunkyButton
-                  as="span"
-                  size="sm"
-                  variant={game.accent === 'orange' ? 'orange' : 'green'}
-                >
+                <ChunkyButton as="span" size="sm" variant={game.accent}>
                   Play →
                 </ChunkyButton>
               </div>

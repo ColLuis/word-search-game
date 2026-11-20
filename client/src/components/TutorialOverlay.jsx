@@ -19,6 +19,23 @@ const TUTORIALS = {
       icon: '✖️',
     },
   ],
+  leafline: [
+    {
+      title: 'Write Your Clues',
+      text: 'You get four cards. Write one word on each side that links the two words touching there.',
+      icon: '✏️',
+    },
+    {
+      title: 'Rebuild the Board',
+      text: "Together, place and rotate cards to rebuild each player's board. One card is a decoy!",
+      icon: '🧩',
+    },
+    {
+      title: 'Score Together',
+      text: '6 points if you nail it first try, 2 on the second. Board owners stay quiet!',
+      icon: '🔗',
+    },
+  ],
   wordclash: [
     {
       title: 'Build Words',

@@ -3,6 +3,7 @@ import express from 'express';
 import { Server } from 'socket.io';
 import { registerSocketHandlers } from '../../socketHandlers.js';
 import { registerWordClashHandlers } from '../../wordclash/socketHandlers.js';
+import { registerLeaflineHandlers } from '../../leafline/socketHandlers.js';
 import { initDictionary } from '../../wordclash/dictionary.js';
 
 let dictionaryInitPromise = null;
@@ -26,6 +27,9 @@ export async function createTestServer() {
 
   const wordclashNs = io.of('/wordclash');
   wordclashNs.on('connection', (socket) => registerWordClashHandlers(wordclashNs, socket));
+
+  const leaflineNs = io.of('/leafline');
+  leaflineNs.on('connection', (socket) => registerLeaflineHandlers(leaflineNs, socket));
 
   await new Promise((resolve) => httpServer.listen(0, '127.0.0.1', resolve));
   const { port } = httpServer.address();

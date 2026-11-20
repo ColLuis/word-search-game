@@ -11,14 +11,18 @@
 | Tests      | Vitest (server only — no client tests yet)                           |
 | Hosting    | Railway (single-process, single instance)                            |
 
-## Two Games in One Repo
+## Three Games in One Repo
 
-There are two games sharing the same server process, split by Socket.IO namespace:
+There are three games sharing the same server process, split by Socket.IO namespace:
 
 - **WordRush** (`/wordrush` namespace) — original word-search grid game
   - Server: `server/src/roomManager.js`, `server/src/gameManager.js`, `server/src/socketHandlers.js`
 - **WordClash** (`/wordclash` namespace) — competitive real-time word game
   - Server: `server/src/wordclash/roomManager.js`, `server/src/wordclash/gameManager.js`, `server/src/wordclash/socketHandlers.js`
+- **WordLink** (shown to players as WordLink at `/wordlink`; code and the `/leafline` Socket.IO namespace still use its old name, Leafline) — 2–6 player co-op clue game: each player writes one-word clues around a 2×2 board of word cards, then the team rebuilds every board
+  - Server: `server/src/leafline/engine.js` (pure rules), `server/src/leafline/roomManager.js`, `server/src/leafline/socketHandlers.js`
+  - Shared: `shared/leafline.js` — event names, clue validation and board geometry used by both server and client
+  - The server sends each player their own filtered `state` (others' solutions are hidden until reveal); reconnects use a per-tab `sessionStorage` session
 
 **Important:** Each game has parallel file structures. Changes to one game's logic should not bleed into the other. Always confirm which namespace you're targeting.
 
