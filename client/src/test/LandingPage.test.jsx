@@ -11,4 +11,14 @@ describe('LandingPage', () => {
     );
     expect(document.body).toBeTruthy();
   });
+
+  it('links to all three games', () => {
+    render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>
+    );
+    const hrefs = screen.getAllByRole('link').map((a) => a.getAttribute('href'));
+    expect(hrefs).toEqual(expect.arrayContaining(['/wordrush', '/wordclash', '/wordlink']));
+  });
 });

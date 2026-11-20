@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { registerSocketHandlers } from './socketHandlers.js';
 import { registerWordClashHandlers } from './wordclash/socketHandlers.js';
+import { registerLeaflineHandlers } from './leafline/socketHandlers.js';
 import { initDictionary } from './wordclash/dictionary.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -51,6 +52,16 @@ wordclashNs.on('connection', (socket) => {
   registerWordClashHandlers(wordclashNs, socket);
   socket.on('disconnect', (reason) => {
     console.log(`[WordClash] Disconnected: ${socket.id} (reason: ${reason})`);
+  });
+});
+
+// Leafline namespace
+const leaflineNs = io.of('/leafline');
+leaflineNs.on('connection', (socket) => {
+  console.log(`[Leafline] Connected: ${socket.id} (transport: ${socket.conn.transport.name})`);
+  registerLeaflineHandlers(leaflineNs, socket);
+  socket.on('disconnect', (reason) => {
+    console.log(`[Leafline] Disconnected: ${socket.id} (reason: ${reason})`);
   });
 });
 
